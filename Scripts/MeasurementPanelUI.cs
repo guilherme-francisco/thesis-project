@@ -2,18 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class MeasurementPanelUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI measurementValueText;
+    [SerializeField] private Button accept;
+    [SerializeField] private Button reject;
 
     private void Start() {
-        SphereCreator.Instance.OnMeasurementEvent += HandleMeasurementEvent;
+        GameManager.Instance.OnMeasurementEvent += HandleMeasurementEvent;
         Debug.Log("Subscription to OnMeasurementEvent");
+
+        accept.onClick.AddListener(() => { Hide(); });
+        reject.onClick.AddListener(() => { Hide(); });
+
         Hide();
     }
 
-    private void HandleMeasurementEvent(object sender, SphereCreator.OnMeasurementEventArgs args)
+    private void HandleMeasurementEvent(object sender, GameManager.OnMeasurementEventArgs args)
     {
         float measurementValue = args.measurementValue;
 
@@ -26,6 +33,8 @@ public class MeasurementPanelUI : MonoBehaviour
 
      private void Show() {
         gameObject.SetActive(true);
+        accept.gameObject.SetActive(true);
+        accept.Select();
     }
 
     private void Hide() {
