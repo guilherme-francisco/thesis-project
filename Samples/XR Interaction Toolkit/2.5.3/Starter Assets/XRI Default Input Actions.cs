@@ -849,6 +849,24 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""PrimaryButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""c6fbea83-bfdf-45b4-be8b-0720663f7ad9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SecondaryButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""a499335f-1042-432b-92fc-70e823eda1e4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -1225,6 +1243,39 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""Pinch"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dc2c625e-1357-40fe-9a92-20f7887c6c1a"",
+                    ""path"": ""<XRController>{RightHand}/{PrimaryButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PrimaryButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4f952421-a393-4478-af0c-407e2b0529fe"",
+                    ""path"": ""<XRController>{RightHand}/{SecondaryButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SecondaryButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5a8f598f-7c14-429b-83a3-06318ad14d57"",
+                    ""path"": ""<XRController>{RightHand}/{Primary2DAxis}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1338,6 +1389,8 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
         m_XRIRightHand_TranslateAnchor = m_XRIRightHand.FindAction("Translate Anchor", throwIfNotFound: true);
         m_XRIRightHand_Grip = m_XRIRightHand.FindAction("Grip", throwIfNotFound: true);
         m_XRIRightHand_Pinch = m_XRIRightHand.FindAction("Pinch", throwIfNotFound: true);
+        m_XRIRightHand_PrimaryButton = m_XRIRightHand.FindAction("PrimaryButton", throwIfNotFound: true);
+        m_XRIRightHand_SecondaryButton = m_XRIRightHand.FindAction("SecondaryButton", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1678,6 +1731,8 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_XRIRightHand_TranslateAnchor;
     private readonly InputAction m_XRIRightHand_Grip;
     private readonly InputAction m_XRIRightHand_Pinch;
+    private readonly InputAction m_XRIRightHand_PrimaryButton;
+    private readonly InputAction m_XRIRightHand_SecondaryButton;
     public struct XRIRightHandActions
     {
         private @XRIDefaultInputActions m_Wrapper;
@@ -1701,6 +1756,8 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
         public InputAction @TranslateAnchor => m_Wrapper.m_XRIRightHand_TranslateAnchor;
         public InputAction @Grip => m_Wrapper.m_XRIRightHand_Grip;
         public InputAction @Pinch => m_Wrapper.m_XRIRightHand_Pinch;
+        public InputAction @PrimaryButton => m_Wrapper.m_XRIRightHand_PrimaryButton;
+        public InputAction @SecondaryButton => m_Wrapper.m_XRIRightHand_SecondaryButton;
         public InputActionMap Get() { return m_Wrapper.m_XRIRightHand; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1767,6 +1824,12 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
             @Pinch.started += instance.OnPinch;
             @Pinch.performed += instance.OnPinch;
             @Pinch.canceled += instance.OnPinch;
+            @PrimaryButton.started += instance.OnPrimaryButton;
+            @PrimaryButton.performed += instance.OnPrimaryButton;
+            @PrimaryButton.canceled += instance.OnPrimaryButton;
+            @SecondaryButton.started += instance.OnSecondaryButton;
+            @SecondaryButton.performed += instance.OnSecondaryButton;
+            @SecondaryButton.canceled += instance.OnSecondaryButton;
         }
 
         private void UnregisterCallbacks(IXRIRightHandActions instance)
@@ -1828,6 +1891,12 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
             @Pinch.started -= instance.OnPinch;
             @Pinch.performed -= instance.OnPinch;
             @Pinch.canceled -= instance.OnPinch;
+            @PrimaryButton.started -= instance.OnPrimaryButton;
+            @PrimaryButton.performed -= instance.OnPrimaryButton;
+            @PrimaryButton.canceled -= instance.OnPrimaryButton;
+            @SecondaryButton.started -= instance.OnSecondaryButton;
+            @SecondaryButton.performed -= instance.OnSecondaryButton;
+            @SecondaryButton.canceled -= instance.OnSecondaryButton;
         }
 
         public void RemoveCallbacks(IXRIRightHandActions instance)
@@ -1922,5 +1991,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
         void OnTranslateAnchor(InputAction.CallbackContext context);
         void OnGrip(InputAction.CallbackContext context);
         void OnPinch(InputAction.CallbackContext context);
+        void OnPrimaryButton(InputAction.CallbackContext context);
+        void OnSecondaryButton(InputAction.CallbackContext context);
     }
 }

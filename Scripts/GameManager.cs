@@ -27,9 +27,15 @@ public class GameManager : MonoBehaviour {
 
     public static GameManager Instance { get; private set; }
 
-    // Activate && Select events
+    // Input action events
     public event EventHandler onActivateEvent;
     public event EventHandler onSelectEvent;
+    public event EventHandler<OnRightHandMoveArgs> onRightHandMove;
+
+    public class OnRightHandMoveArgs : EventArgs
+    {
+        public Vector2 moveDirection;
+    }
 
     // Measurement
 
@@ -50,7 +56,7 @@ public class GameManager : MonoBehaviour {
     private List<GameObject> spheres = new List<GameObject>();
 
     [Header("Rotate")]
-    [SerializeField] private float  rotSpeed = 4.0f;
+    [SerializeField] private float  rotateSpeed = 4.0f;
 
     [SerializeField] private float zoomSpeed = 1.0f;
 
@@ -63,12 +69,12 @@ public class GameManager : MonoBehaviour {
 	[SerializeField] private float scaleMax = 100f;
 
     [Header("Clipping")]
-    [SerializeField] private Material volumetricMaterial;
+    private Material volumetricMaterial;
 
     [Header("Main Controller")]
     [SerializeField] private GameObject leftController;
 
-    private XRBaseInteractor rayInteractor;
+
     private XRIDefaultInputActions inputActions;
 
 	private ToolsPanelUI toolsPanelUI;
@@ -86,12 +92,25 @@ public class GameManager : MonoBehaviour {
 
         inputActions = new XRIDefaultInputActions();
 
+        // Left
 		inputActions.XRILeftHand.Activate.performed += OnActivatePerformed;
 		inputActions.XRILeftHand.Select.performed += OnSelectPerformed;
         inputActions.XRILeftHand.PrimaryButton.performed += OnPrimaryButtonPerformed;
         inputActions.XRILeftHand.SecondaryButton.performed += OnSecondaryButtonPerformed;
+        // Right
+        inputActions.XRIRightHand.Move.performed += OnRightHandMovedPerformed;
 	}
 
+    private void OnRightHandMovedPerformed(InputAction.CallbackContext context)
+    {
+        Vector2 moveDirection = context.ReadValue<Vector2>();
+        Debug.Log("Right Hand Moved: " + moveDirection.ToString());
+
+        onRightHandMove?.Invoke(this, new OnRightHandMoveArgs
+        {
+            moveDirection = moveDirection,
+        });
+    }
 
     private void OnPrimaryButtonPerformed(InputAction.CallbackContext context)
     {
@@ -106,7 +125,6 @@ public class GameManager : MonoBehaviour {
 
     void Start () {
         toolsPanelUI = ToolsPanelUI.Instance;
-        rayInteractor = leftController.GetComponent<XRBaseInteractor>();
         volumetricMaterial = model3D.GetComponent<Renderer>().material;
     }
 
@@ -115,8 +133,7 @@ public class GameManager : MonoBehaviour {
         switch (toolsPanelUI.GetMode())
         {
             case ToolsPanelUI.Modes.Rotate:
-                Vector3 previousOrigin = Mouse.current.position.ReadValue();
-                RotateModel(previousOrigin);
+                RotateModel();
                 break;
             case ToolsPanelUI.Modes.Move:
                 MoveModel();
@@ -148,20 +165,30 @@ public class GameManager : MonoBehaviour {
 
     private void OnEnable()
     {
+        // Left
         inputActions.XRILeftHand.PrimaryButton.Enable();
         inputActions.XRILeftHand.SecondaryButton.Enable();
         inputActions.XRILeftHand.Move.Enable();
         inputActions.XRILeftHand.Activate.Enable();
         inputActions.XRILeftHand.Select.Enable();
+        // Right
+        inputActions.XRIRightHand.PrimaryButton.Enable();
+        inputActions.XRIRightHand.SecondaryButton.Enable();
+        inputActions.XRIRightHand.Move.Enable();
     }
 
     private void OnDisable()
     {
+        // Left
         inputActions.XRILeftHand.PrimaryButton.Disable();
         inputActions.XRILeftHand.SecondaryButton.Disable();
         inputActions.XRILeftHand.Move.Disable();
         inputActions.XRILeftHand.Activate.Disable();
         inputActions.XRILeftHand.Select.Disable();
+        // Right
+        inputActions.XRIRightHand.PrimaryButton.Disable();
+        inputActions.XRIRightHand.SecondaryButton.Disable();
+        inputActions.XRIRightHand.Move.Disable();
     }
 
     private void OnActivatePerformed(InputAction.CallbackContext context)
@@ -209,36 +236,33 @@ public class GameManager : MonoBehaviour {
 
     // Rotate
 
-    private void RotateModel(Vector3 previousOrigin)
-	{
+    private void RotateModel()
+    {
+        Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
 
-        GameObject rotationCentre = null;
+        Debug.Log("Thumbstick input: " + thumbstickInput.ToString());
 
-        if (inputActions.XRILeftHand.Activate.triggered)
+        if (inputActions.XRILeftHand.PrimaryButton.IsPressed())
         {
-            rotationCentre = model3D.gameObject;
+            model3D.transform.Rotate(Vector3.forward, rotateSpeed * Time.deltaTime);
         }
-        else if (inputActions.XRILeftHand.Select.triggered)
+
+        if (inputActions.XRILeftHand.SecondaryButton.IsPressed())
         {
-            rotationCentre = Camera.main.gameObject;
-        } else
-		{
+            model3D.transform.Rotate(Vector3.back, rotateSpeed * Time.deltaTime);
+        }
 
-            return;
-		}
+        if (Mathf.Abs(thumbstickInput.x) > 0.5f)
+        {
+            float rotationAmount = Mathf.Sign(thumbstickInput.x) * rotateSpeed * Time.deltaTime;
+            model3D.transform.Rotate(Vector3.up, rotationAmount);
+        }
 
-        Vector3 controllerOrigin = Mouse.current.position.ReadValue();
-
-		Debug.Log("Current Origin:" + controllerOrigin.ToString());
-		Debug.Log("Previous Origin:" + previousOrigin.ToString());
-
-        Vector3 rotationAxisX = Camera.main.transform.up;
-        Vector3 rotationAxisY = Camera.main.transform.right;
-        Vector3 angleDelta = (controllerOrigin - previousOrigin) / Screen.width;
-        angleDelta *= rotSpeed;
-        angleDelta.x *= -1;
-        model3D.transform.RotateAround(rotationCentre.transform.position, rotationAxisX, angleDelta.x);
-        model3D.transform.RotateAround(rotationCentre.transform.position, rotationAxisY, angleDelta.y);
+        if (Mathf.Abs(thumbstickInput.y) > 0.5f)
+        {
+            float rotationAmount = Mathf.Sign(thumbstickInput.y) * rotateSpeed * Time.deltaTime;
+            model3D.transform.Rotate(Vector3.right, rotationAmount);
+        }
     }
 
 
