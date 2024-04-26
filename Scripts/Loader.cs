@@ -44,11 +44,13 @@ public class Loader : MonoBehaviour {
 			LoadRAWFile();
 		}
 
-		texture = new Texture3D (size [0], size [1], size [2], TextureFormat.ARGB32, true);
-		texture.wrapMode = TextureWrapMode.Clamp;
+        texture = new Texture3D(size[0], size[1], size[2], TextureFormat.ARGB32, true)
+        {
+            wrapMode = TextureWrapMode.Clamp
+        };
 
-		//Obtain Transfer Function and save it
-		Parser parser = new Parser(transferFolder);
+        //Obtain Transfer Function and save it
+        Parser parser = new Parser(transferFolder);
 		transferFunction = parser.TransferFunction();
 
 		//Apply Transfer Function

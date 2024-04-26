@@ -125,7 +125,7 @@ public class GameManager : MonoBehaviour {
 
     void Start () {
         toolsPanelUI = ToolsPanelUI.Instance;
-        volumetricMaterial = model3D.GetComponent<Renderer>().material;
+        volumetricMaterial = model3D.GetComponentInChildren<Renderer>().material;
     }
 
     void Update()
