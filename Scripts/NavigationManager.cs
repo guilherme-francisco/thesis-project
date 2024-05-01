@@ -11,7 +11,7 @@ public class NavigationManager : MonoBehaviour
     {
         // Get the EventSystem component
         eventSystem = GetComponent<EventSystem>();
-        GameManager.Instance.onRightHandMove += GameManager_onRightHandMove;
+        GameManager.Instance.OnRightHandMove += GameManager_onRightHandMove;
     }
 
     private void GameManager_onRightHandMove(object sender, GameManager.OnRightHandMoveArgs e)

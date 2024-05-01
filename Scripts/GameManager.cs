@@ -20,6 +20,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using EzySlice;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -28,9 +29,9 @@ public class GameManager : MonoBehaviour {
     public static GameManager Instance { get; private set; }
 
     // Input action events
-    public event EventHandler onActivateEvent;
-    public event EventHandler onSelectEvent;
-    public event EventHandler<OnRightHandMoveArgs> onRightHandMove;
+    public event EventHandler OnActivateEvent;
+    public event EventHandler OnSelectEvent;
+    public event EventHandler<OnRightHandMoveArgs> OnRightHandMove;
 
     public class OnRightHandMoveArgs : EventArgs
     {
@@ -53,7 +54,7 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private GameObject spherePrefab;
 
 
-    private List<GameObject> spheres = new List<GameObject>();
+    private List<GameObject> spheres = new();
 
     [Header("Rotate")]
     [SerializeField] private float  rotateSpeed = 4.0f;
@@ -70,14 +71,21 @@ public class GameManager : MonoBehaviour {
 
     [Header("Clipping")]
     private Material volumetricMaterial;
+    [SerializeField] Transform clippingPlane;
+
+    private bool isClipped = false;
+
+    
+    [Header("Navigation")]
+    [SerializeField] private Transform xrOrigin;
 
     [Header("Main Controller")]
     [SerializeField] private GameObject leftController;
 
 
     private XRIDefaultInputActions inputActions;
-
 	private ToolsPanelUI toolsPanelUI;
+
 
 	void Awake () {
         if (Instance == null)
@@ -106,7 +114,7 @@ public class GameManager : MonoBehaviour {
         Vector2 moveDirection = context.ReadValue<Vector2>();
         Debug.Log("Right Hand Moved: " + moveDirection.ToString());
 
-        onRightHandMove?.Invoke(this, new OnRightHandMoveArgs
+        OnRightHandMove?.Invoke(this, new OnRightHandMoveArgs
         {
             moveDirection = moveDirection,
         });
@@ -126,6 +134,13 @@ public class GameManager : MonoBehaviour {
     void Start () {
         toolsPanelUI = ToolsPanelUI.Instance;
         volumetricMaterial = model3D.GetComponentInChildren<Renderer>().material;
+        toolsPanelUI.onNavigateEvent += ToolsPanelUI_OnNavigateEvent;
+    }
+
+    private void ToolsPanelUI_OnNavigateEvent(object sender, EventArgs e)
+    {
+        xrOrigin.localScale /= 10;
+        xrOrigin.position = model3D.transform.position;
     }
 
     void Update()
@@ -144,8 +159,23 @@ public class GameManager : MonoBehaviour {
             case ToolsPanelUI.Modes.Tag:
                 HandleTag();
                 break;
+            case ToolsPanelUI.Modes.Clip:
+                HandleClip();
+                break;
         }
 
+    }
+
+    private void HandleClip()
+    {
+        SlicedHull hull = model3D.Slice(clippingPlane.position, clippingPlane.up);
+
+        if (hull != null && !isClipped == true) {
+            Debug.Log("Model Clip successfully");
+            hull.CreateLowerHull(model3D);
+            model3D.SetActive(false);
+            isClipped = true; 
+        }
     }
 
     private void OnSelectPerformed(InputAction.CallbackContext context)
@@ -160,7 +190,7 @@ public class GameManager : MonoBehaviour {
                 break;
         }
 
-        onSelectEvent?.Invoke(this, EventArgs.Empty);
+        OnSelectEvent?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnEnable()
@@ -195,7 +225,7 @@ public class GameManager : MonoBehaviour {
     {
         Debug.Log("Activate action performed on the left hand!");
 
-        onActivateEvent?.Invoke(this, EventArgs.Empty);
+        OnActivateEvent?.Invoke(this, EventArgs.Empty);
     }
 
     // Move 

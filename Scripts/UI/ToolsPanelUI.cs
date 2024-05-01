@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class ToolsPanelUI : MonoBehaviour
 {
+    public event EventHandler onNavigateEvent;
+
     [SerializeField] private GameObject ClippingPanelUI;
 
     public static ToolsPanelUI Instance { get; private set; }
@@ -18,7 +20,8 @@ public class ToolsPanelUI : MonoBehaviour
         Scale,
         Measure,
         Tag,
-        Clip
+        Clip,
+        Navigate
     }
 
     [SerializeField] private Button moveButton;
@@ -27,6 +30,7 @@ public class ToolsPanelUI : MonoBehaviour
     [SerializeField] private Button measureButton;
     [SerializeField] private Button tagButton;
     [SerializeField] private Button clipButton;
+    [SerializeField] private Button navigateButton;
 
     private Modes currentMode = Modes.Default;
 
@@ -45,6 +49,7 @@ public class ToolsPanelUI : MonoBehaviour
         measureButton.onClick.AddListener(() => OnButtonClick(measureButton, Modes.Measure));
         tagButton.onClick.AddListener(() => OnButtonClick(tagButton, Modes.Tag));
         clipButton.onClick.AddListener(() => OnButtonClick(clipButton, Modes.Clip)); 
+        navigateButton.onClick.AddListener(() => OnButtonClick(navigateButton, Modes.Navigate));
     }
     
     private void OnButtonClick(Button clickedButton, Modes mode)
@@ -57,6 +62,10 @@ public class ToolsPanelUI : MonoBehaviour
             ClippingPanelUI.SetActive(true);
         } else { 
             ClippingPanelUI.SetActive(false);
+        }
+
+        if(mode == Modes.Navigate) { 
+            onNavigateEvent?.Invoke(this, EventArgs.Empty);
         }
 
         Debug.Log("Current Mode: " + mode.ToString());
