@@ -1,24 +1,29 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public class NavigationManager : MonoBehaviour
 {
     private EventSystem eventSystem;
 
+    private XRIDefaultInputActions inputActions;
     private void Start()
     {
         // Get the EventSystem component
         eventSystem = GetComponent<EventSystem>();
-        GameManager.Instance.OnRightHandMove += GameManager_onRightHandMove;
+        inputActions = new XRIDefaultInputActions();
+
+        inputActions.XRIRightHand.Move.performed += OnRightHandMove;
     }
 
-    private void GameManager_onRightHandMove(object sender, GameManager.OnRightHandMoveArgs e)
+    private void OnRightHandMove(InputAction.CallbackContext context)
     {
         AxisEventData data = new AxisEventData(EventSystem.current);
 
-        data.moveDir = GetMoveDirection(e.moveDirection);
+        data.moveDir = GetMoveDirection(context.ReadValue<Vector2>());
 
         data.selectedObject = EventSystem.current.currentSelectedGameObject;
 

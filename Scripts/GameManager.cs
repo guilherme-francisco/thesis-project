@@ -1,42 +1,11 @@
-﻿// transforms an object: 
-// - hold and drag primary mouse button to rotate the cube around its centre
-// - hold and drag primary mouse button to rotate the cube around the camera (useful when inside the cube)
-// - use arrow keys to translate the cube left/right and forward/backward
-// - scroll wheel to scale the cube up/down
-// adapted from various online sources
-// Gilles Ferrand, University of Manitoba 2016
-
-using System;
+﻿using System;
 using System.Collections.Generic;
-
-
-// transforms an object: 
-// - hold and drag primary mouse button to rotate the cube around its centre
-// - hold and drag primary mouse button to rotate the cube around the camera (useful when inside the cube)
-// - use arrow keys to translate the cube left/right and forward/backward
-// - scroll wheel to scale the cube up/down
-// adapted from various online sources
-// Gilles Ferrand, University of Manitoba 2016
-
 using UnityEngine;
 using UnityEngine.InputSystem;
-using EzySlice;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.XR.Interaction.Toolkit;
 
 public class GameManager : MonoBehaviour {
 
     public static GameManager Instance { get; private set; }
-
-    // Input action events
-    public event EventHandler OnActivateEvent;
-    public event EventHandler OnSelectEvent;
-    public event EventHandler<OnRightHandMoveArgs> OnRightHandMove;
-
-    public class OnRightHandMoveArgs : EventArgs
-    {
-        public Vector2 moveDirection;
-    }
 
     // Measurement
 
@@ -98,49 +67,21 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
         }
 
-        inputActions = new XRIDefaultInputActions();
-
-        // Left
-		inputActions.XRILeftHand.Activate.performed += OnActivatePerformed;
+        inputActions = InputActionsManager.Instance.InputActions;
 		inputActions.XRILeftHand.Select.performed += OnSelectPerformed;
-        inputActions.XRILeftHand.PrimaryButton.performed += OnPrimaryButtonPerformed;
-        inputActions.XRILeftHand.SecondaryButton.performed += OnSecondaryButtonPerformed;
-        // Right
-        inputActions.XRIRightHand.Move.performed += OnRightHandMovedPerformed;
 	}
-
-    private void OnRightHandMovedPerformed(InputAction.CallbackContext context)
-    {
-        Vector2 moveDirection = context.ReadValue<Vector2>();
-        Debug.Log("Right Hand Moved: " + moveDirection.ToString());
-
-        OnRightHandMove?.Invoke(this, new OnRightHandMoveArgs
-        {
-            moveDirection = moveDirection,
-        });
-    }
-
-    private void OnPrimaryButtonPerformed(InputAction.CallbackContext context)
-    {
-        Debug.Log("Primary Button performed!");
-    }
-
-    private void OnSecondaryButtonPerformed(InputAction.CallbackContext context)
-    {
-        Debug.Log("Secondary Button performed!");
-    }
-
-
     void Start () {
         toolsPanelUI = ToolsPanelUI.Instance;
         volumetricMaterial = model3D.GetComponentInChildren<Renderer>().material;
-        toolsPanelUI.onNavigateEvent += ToolsPanelUI_OnNavigateEvent;
+        toolsPanelUI.OnNavigateEvent += ToolsPanelUI_OnNavigateEvent;
     }
 
     private void ToolsPanelUI_OnNavigateEvent(object sender, EventArgs e)
     {
-        xrOrigin.localScale /= 10;
+        xrOrigin.localScale /= 20;
+        sphereRadius /= 2;
         xrOrigin.position = model3D.transform.position;
+        toolsPanelUI.SetNavigation(ToolsPanelUI.Navigation.Inside);
     }
 
     void Update()
@@ -159,22 +100,6 @@ public class GameManager : MonoBehaviour {
             case ToolsPanelUI.Modes.Tag:
                 HandleTag();
                 break;
-            case ToolsPanelUI.Modes.Clip:
-                HandleClip();
-                break;
-        }
-
-    }
-
-    private void HandleClip()
-    {
-        SlicedHull hull = model3D.Slice(clippingPlane.position, clippingPlane.up);
-
-        if (hull != null && !isClipped == true) {
-            Debug.Log("Model Clip successfully");
-            hull.CreateLowerHull(model3D);
-            model3D.SetActive(false);
-            isClipped = true; 
         }
     }
 
@@ -189,43 +114,6 @@ public class GameManager : MonoBehaviour {
                 HandleMeasure();
                 break;
         }
-
-        OnSelectEvent?.Invoke(this, EventArgs.Empty);
-    }
-
-    private void OnEnable()
-    {
-        // Left
-        inputActions.XRILeftHand.PrimaryButton.Enable();
-        inputActions.XRILeftHand.SecondaryButton.Enable();
-        inputActions.XRILeftHand.Move.Enable();
-        inputActions.XRILeftHand.Activate.Enable();
-        inputActions.XRILeftHand.Select.Enable();
-        // Right
-        inputActions.XRIRightHand.PrimaryButton.Enable();
-        inputActions.XRIRightHand.SecondaryButton.Enable();
-        inputActions.XRIRightHand.Move.Enable();
-    }
-
-    private void OnDisable()
-    {
-        // Left
-        inputActions.XRILeftHand.PrimaryButton.Disable();
-        inputActions.XRILeftHand.SecondaryButton.Disable();
-        inputActions.XRILeftHand.Move.Disable();
-        inputActions.XRILeftHand.Activate.Disable();
-        inputActions.XRILeftHand.Select.Disable();
-        // Right
-        inputActions.XRIRightHand.PrimaryButton.Disable();
-        inputActions.XRIRightHand.SecondaryButton.Disable();
-        inputActions.XRIRightHand.Move.Disable();
-    }
-
-    private void OnActivatePerformed(InputAction.CallbackContext context)
-    {
-        Debug.Log("Activate action performed on the left hand!");
-
-        OnActivateEvent?.Invoke(this, EventArgs.Empty);
     }
 
     // Move 

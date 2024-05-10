@@ -6,10 +6,11 @@ using UnityEngine.UI;
 
 public class ToolsPanelUI : MonoBehaviour
 {
-    public event EventHandler onNavigateEvent;
+    public event EventHandler OnNavigateEvent;
 
-    [SerializeField] private GameObject ClippingPanelUI;
+    [SerializeField] private GameObject clippingPanelUI;
 
+    [SerializeField] private GameObject measurementToolsUI; 
     public static ToolsPanelUI Instance { get; private set; }
 
     public enum Modes
@@ -24,6 +25,11 @@ public class ToolsPanelUI : MonoBehaviour
         Navigate
     }
 
+    public enum Navigation {
+        Outside,
+        Inside,
+    }
+
     [SerializeField] private Button moveButton;
     [SerializeField] private Button rotateButton;
     [SerializeField] private Button scaleButton;
@@ -34,10 +40,12 @@ public class ToolsPanelUI : MonoBehaviour
 
     private Modes currentMode = Modes.Default;
 
-      private void Awake()
+    private Navigation currentNavigation = Navigation.Outside;
+
+    private void Awake()
     {
         Instance = this;
-        ClippingPanelUI.SetActive(false);
+        clippingPanelUI.SetActive(false);
     }
 
     private void Start()
@@ -59,13 +67,19 @@ public class ToolsPanelUI : MonoBehaviour
 
         if (mode == Modes.Clip)
         {
-            ClippingPanelUI.SetActive(true);
+            clippingPanelUI.SetActive(true);
         } else { 
-            ClippingPanelUI.SetActive(false);
+            clippingPanelUI.SetActive(false);
         }
 
         if(mode == Modes.Navigate) { 
-            onNavigateEvent?.Invoke(this, EventArgs.Empty);
+            OnNavigateEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        if (mode == Modes.Measure) {
+            measurementToolsUI.SetActive(true);
+        } else { 
+            measurementToolsUI.SetActive(false);
         }
 
         Debug.Log("Current Mode: " + mode.ToString());
@@ -76,4 +90,16 @@ public class ToolsPanelUI : MonoBehaviour
         return currentMode;
     }
 
+    public void SetMode(Modes mode) {
+        currentMode = mode;
+    }
+
+    public Navigation GetNavigation()
+    {
+        return currentNavigation;
+    }
+
+    public void SetNavigation(Navigation navigation) {
+        currentNavigation = navigation;
+    }
 }
