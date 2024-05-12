@@ -263,6 +263,15 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MenuButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""02a2e81d-474c-401f-ab85-e05a6a85dd93"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -672,6 +681,17 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""SecondaryButton"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a17df346-7977-4465-bf6d-76626271cafe"",
+                    ""path"": ""<XRController>{LeftHand}/{MenuButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MenuButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -863,6 +883,15 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
                     ""name"": ""SecondaryButton"",
                     ""type"": ""Button"",
                     ""id"": ""a499335f-1042-432b-92fc-70e823eda1e4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MenuButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""a2d49a12-88f8-4acc-8ac5-6ccb59fd9243"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -1276,6 +1305,17 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d946fe59-ea9c-4a96-93f3-d078f2e0764c"",
+                    ""path"": ""<XRController>{RightHand}/{MenuButton}"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MenuButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -1368,6 +1408,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
         m_XRILeftHand_Pinch = m_XRILeftHand.FindAction("Pinch", throwIfNotFound: true);
         m_XRILeftHand_PrimaryButton = m_XRILeftHand.FindAction("PrimaryButton", throwIfNotFound: true);
         m_XRILeftHand_SecondaryButton = m_XRILeftHand.FindAction("SecondaryButton", throwIfNotFound: true);
+        m_XRILeftHand_MenuButton = m_XRILeftHand.FindAction("MenuButton", throwIfNotFound: true);
         // XRI RightHand
         m_XRIRightHand = asset.FindActionMap("XRI RightHand", throwIfNotFound: true);
         m_XRIRightHand_Position = m_XRIRightHand.FindAction("Position", throwIfNotFound: true);
@@ -1391,6 +1432,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
         m_XRIRightHand_Pinch = m_XRIRightHand.FindAction("Pinch", throwIfNotFound: true);
         m_XRIRightHand_PrimaryButton = m_XRIRightHand.FindAction("PrimaryButton", throwIfNotFound: true);
         m_XRIRightHand_SecondaryButton = m_XRIRightHand.FindAction("SecondaryButton", throwIfNotFound: true);
+        m_XRIRightHand_MenuButton = m_XRIRightHand.FindAction("MenuButton", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1527,6 +1569,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_XRILeftHand_Pinch;
     private readonly InputAction m_XRILeftHand_PrimaryButton;
     private readonly InputAction m_XRILeftHand_SecondaryButton;
+    private readonly InputAction m_XRILeftHand_MenuButton;
     public struct XRILeftHandActions
     {
         private @XRIDefaultInputActions m_Wrapper;
@@ -1552,6 +1595,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
         public InputAction @Pinch => m_Wrapper.m_XRILeftHand_Pinch;
         public InputAction @PrimaryButton => m_Wrapper.m_XRILeftHand_PrimaryButton;
         public InputAction @SecondaryButton => m_Wrapper.m_XRILeftHand_SecondaryButton;
+        public InputAction @MenuButton => m_Wrapper.m_XRILeftHand_MenuButton;
         public InputActionMap Get() { return m_Wrapper.m_XRILeftHand; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1624,6 +1668,9 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
             @SecondaryButton.started += instance.OnSecondaryButton;
             @SecondaryButton.performed += instance.OnSecondaryButton;
             @SecondaryButton.canceled += instance.OnSecondaryButton;
+            @MenuButton.started += instance.OnMenuButton;
+            @MenuButton.performed += instance.OnMenuButton;
+            @MenuButton.canceled += instance.OnMenuButton;
         }
 
         private void UnregisterCallbacks(IXRILeftHandActions instance)
@@ -1691,6 +1738,9 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
             @SecondaryButton.started -= instance.OnSecondaryButton;
             @SecondaryButton.performed -= instance.OnSecondaryButton;
             @SecondaryButton.canceled -= instance.OnSecondaryButton;
+            @MenuButton.started -= instance.OnMenuButton;
+            @MenuButton.performed -= instance.OnMenuButton;
+            @MenuButton.canceled -= instance.OnMenuButton;
         }
 
         public void RemoveCallbacks(IXRILeftHandActions instance)
@@ -1733,6 +1783,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
     private readonly InputAction m_XRIRightHand_Pinch;
     private readonly InputAction m_XRIRightHand_PrimaryButton;
     private readonly InputAction m_XRIRightHand_SecondaryButton;
+    private readonly InputAction m_XRIRightHand_MenuButton;
     public struct XRIRightHandActions
     {
         private @XRIDefaultInputActions m_Wrapper;
@@ -1758,6 +1809,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
         public InputAction @Pinch => m_Wrapper.m_XRIRightHand_Pinch;
         public InputAction @PrimaryButton => m_Wrapper.m_XRIRightHand_PrimaryButton;
         public InputAction @SecondaryButton => m_Wrapper.m_XRIRightHand_SecondaryButton;
+        public InputAction @MenuButton => m_Wrapper.m_XRIRightHand_MenuButton;
         public InputActionMap Get() { return m_Wrapper.m_XRIRightHand; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1830,6 +1882,9 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
             @SecondaryButton.started += instance.OnSecondaryButton;
             @SecondaryButton.performed += instance.OnSecondaryButton;
             @SecondaryButton.canceled += instance.OnSecondaryButton;
+            @MenuButton.started += instance.OnMenuButton;
+            @MenuButton.performed += instance.OnMenuButton;
+            @MenuButton.canceled += instance.OnMenuButton;
         }
 
         private void UnregisterCallbacks(IXRIRightHandActions instance)
@@ -1897,6 +1952,9 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
             @SecondaryButton.started -= instance.OnSecondaryButton;
             @SecondaryButton.performed -= instance.OnSecondaryButton;
             @SecondaryButton.canceled -= instance.OnSecondaryButton;
+            @MenuButton.started -= instance.OnMenuButton;
+            @MenuButton.performed -= instance.OnMenuButton;
+            @MenuButton.canceled -= instance.OnMenuButton;
         }
 
         public void RemoveCallbacks(IXRIRightHandActions instance)
@@ -1969,6 +2027,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
         void OnPinch(InputAction.CallbackContext context);
         void OnPrimaryButton(InputAction.CallbackContext context);
         void OnSecondaryButton(InputAction.CallbackContext context);
+        void OnMenuButton(InputAction.CallbackContext context);
     }
     public interface IXRIRightHandActions
     {
@@ -1993,5 +2052,6 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
         void OnPinch(InputAction.CallbackContext context);
         void OnPrimaryButton(InputAction.CallbackContext context);
         void OnSecondaryButton(InputAction.CallbackContext context);
+        void OnMenuButton(InputAction.CallbackContext context);
     }
 }

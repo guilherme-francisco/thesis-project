@@ -6,8 +6,11 @@ using UnityEngine.UI;
 
 public class ToolsPanelUI : MonoBehaviour
 {
-    [SerializeField] private GameObject ClippingPanelUI;
+    public event EventHandler OnNavigateEvent;
 
+    [SerializeField] private GameObject clippingPanelUI;
+
+    [SerializeField] private GameObject measurementToolsUI; 
     public static ToolsPanelUI Instance { get; private set; }
 
     public enum Modes
@@ -18,7 +21,13 @@ public class ToolsPanelUI : MonoBehaviour
         Scale,
         Measure,
         Tag,
-        Clip
+        Clip,
+        Navigate
+    }
+
+    public enum Navigation {
+        Outside,
+        Inside,
     }
 
     [SerializeField] private Button moveButton;
@@ -27,13 +36,16 @@ public class ToolsPanelUI : MonoBehaviour
     [SerializeField] private Button measureButton;
     [SerializeField] private Button tagButton;
     [SerializeField] private Button clipButton;
+    [SerializeField] private Button navigateButton;
 
     private Modes currentMode = Modes.Default;
 
-      private void Awake()
+    private Navigation currentNavigation = Navigation.Outside;
+
+    private void Awake()
     {
         Instance = this;
-        ClippingPanelUI.SetActive(false);
+        clippingPanelUI.SetActive(false);
     }
 
     private void Start()
@@ -45,6 +57,7 @@ public class ToolsPanelUI : MonoBehaviour
         measureButton.onClick.AddListener(() => OnButtonClick(measureButton, Modes.Measure));
         tagButton.onClick.AddListener(() => OnButtonClick(tagButton, Modes.Tag));
         clipButton.onClick.AddListener(() => OnButtonClick(clipButton, Modes.Clip)); 
+        navigateButton.onClick.AddListener(() => OnButtonClick(navigateButton, Modes.Navigate));
     }
     
     private void OnButtonClick(Button clickedButton, Modes mode)
@@ -54,9 +67,19 @@ public class ToolsPanelUI : MonoBehaviour
 
         if (mode == Modes.Clip)
         {
-            ClippingPanelUI.SetActive(true);
+            clippingPanelUI.SetActive(true);
         } else { 
-            ClippingPanelUI.SetActive(false);
+            clippingPanelUI.SetActive(false);
+        }
+
+        if(mode == Modes.Navigate) { 
+            OnNavigateEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        if (mode == Modes.Measure) {
+            measurementToolsUI.SetActive(true);
+        } else { 
+            measurementToolsUI.SetActive(false);
         }
 
         Debug.Log("Current Mode: " + mode.ToString());
@@ -67,4 +90,16 @@ public class ToolsPanelUI : MonoBehaviour
         return currentMode;
     }
 
+    public void SetMode(Modes mode) {
+        currentMode = mode;
+    }
+
+    public Navigation GetNavigation()
+    {
+        return currentNavigation;
+    }
+
+    public void SetNavigation(Navigation navigation) {
+        currentNavigation = navigation;
+    }
 }
