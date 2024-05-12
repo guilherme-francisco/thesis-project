@@ -19,7 +19,6 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private GameObject model3D;
 
     [Header("Tag")]
-    [SerializeField] private float sphereRadius = 1.0f;
     [SerializeField] private GameObject spherePrefab;
 
 
@@ -40,10 +39,6 @@ public class GameManager : MonoBehaviour {
 
     [Header("Clipping")]
     private Material volumetricMaterial;
-    [SerializeField] Transform clippingPlane;
-
-    private bool isClipped = false;
-
     
     [Header("Navigation")]
     [SerializeField] private Transform xrOrigin;
@@ -51,10 +46,8 @@ public class GameManager : MonoBehaviour {
     [Header("Main Controller")]
     [SerializeField] private GameObject leftController;
 
-
     private XRIDefaultInputActions inputActions;
 	private ToolsPanelUI toolsPanelUI;
-
 
 	void Awake () {
         if (Instance == null)
