@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private GameObject model3D;
 
     [Header("Tag")]
+    [SerializeField] private float sphereRadius = 1.0f;
     [SerializeField] private GameObject spherePrefab;
 
 
@@ -286,21 +287,21 @@ public class GameManager : MonoBehaviour {
     public void OnXSliderValueChanged(float value)
     {
         Debug.Log("XSlider changed: " + value);
-        volumetricMaterial.SetFloat("_SliceAxis1Min", value);
+        volumetricMaterial.SetFloat("_SliceX", value);
         //volumetricMaterial.SetFloat("_SliceAxis1Max", 1 - value);
     }
 
     public void OnYSliderValueChanged(float value)
     {
         Debug.Log("YSlider changed: " + value);
-        volumetricMaterial.SetFloat("_SliceAxis2Min", value);
+        volumetricMaterial.SetFloat("_SliceY", value);
         //volumetricMaterial.SetFloat("_SliceAxis2Max", 1 - value);
     }
 
     public void OnZSliderValueChanged(float value)
     {
         Debug.Log("ZSlider changed: " + value);
-        volumetricMaterial.SetFloat("_SliceAxis3Min", value);
+        volumetricMaterial.SetFloat("_SliceZ", value);
         //volumetricMaterial.SetFloat("_SliceAxis3Max", 1 - value);
     }
 }

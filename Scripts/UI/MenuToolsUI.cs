@@ -15,6 +15,7 @@ public class MenuToolsUI : MonoBehaviour
     [SerializeField] private Button mapDisplayButton;
 
     [SerializeField] private GameObject dicomImageUI;
+    [SerializeField] private GameObject sliders;
 
     [SerializeField] private GameObject minimap;
     [SerializeField] private GameObject measurementToolsUI;    
@@ -76,6 +77,7 @@ public class MenuToolsUI : MonoBehaviour
     private void OnDicomClick()
     {
         dicomImageUI.SetActive(true);
+        sliders.SetActive(false);
         Hide();
     }
 
