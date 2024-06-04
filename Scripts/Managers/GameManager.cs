@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour {
 
     public static GameManager Instance { get; private set; }
-
-    // Measurement
-
-    public event EventHandler<OnMeasurementEventArgs> OnMeasurementEvent;
-    public class OnMeasurementEventArgs : EventArgs
-    {
-        public float measurementValue;
-    }
 
     [Header("3D Model")]
     [SerializeField] private GameObject model3D;
@@ -21,9 +12,6 @@ public class GameManager : MonoBehaviour {
     [Header("Tag")]
     [SerializeField] private float sphereRadius = 1.0f;
     [SerializeField] private GameObject spherePrefab;
-
-
-    private List<GameObject> spheres = new();
 
     [Header("Rotate")]
     [SerializeField] private float  rotateSpeed = 4.0f;
@@ -38,9 +26,6 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private float scaleMin = 0.01f;
 	[SerializeField] private float scaleMax = 100f;
 
-    [Header("Clipping")]
-    private Material volumetricMaterial;
-    
     [Header("Navigation")]
     [SerializeField] private Transform xrOrigin;
 
@@ -60,13 +45,11 @@ public class GameManager : MonoBehaviour {
             Debug.LogWarning("Duplicate instance of GameManager. Destroying the duplicate.");
             Destroy(gameObject);
         }
-
-        inputActions = InputActionsManager.Instance.InputActions;
-		inputActions.XRILeftHand.Select.performed += OnSelectPerformed;
 	}
+
     void Start () {
+        inputActions = InputActionsManager.Instance.InputActions;
         toolsPanelUI = ToolsPanelUI.Instance;
-        volumetricMaterial = model3D.GetComponentInChildren<Renderer>().material;
         toolsPanelUI.OnNavigateEvent += ToolsPanelUI_OnNavigateEvent;
     }
 
@@ -93,19 +76,6 @@ public class GameManager : MonoBehaviour {
                 break;
             case ToolsPanelUI.Modes.Tag:
                 HandleTag();
-                break;
-        }
-    }
-
-    private void OnSelectPerformed(InputAction.CallbackContext context)
-    {
-
-        Debug.Log("Select action performed on the left hand!");
-
-        switch (toolsPanelUI.GetMode())
-        {
-            case ToolsPanelUI.Modes.Measure:
-                HandleMeasure();
                 break;
         }
     }
@@ -202,12 +172,10 @@ public class GameManager : MonoBehaviour {
     }
 
     // Tag
-    private bool TryToCreateSphere(out GameObject sphere)
+    public bool TryToCreateSphere(out GameObject sphere)
     {
-        RaycastHit hit;
-
         if (Physics.Raycast(leftController.transform.position,
-            leftController.transform.forward, out hit))
+            leftController.transform.forward, out RaycastHit hit))
         {
             if (!hit.collider.CompareTag("SpherePrefab"))
             {
@@ -219,6 +187,22 @@ public class GameManager : MonoBehaviour {
         }
 
         sphere = null;
+        return false;
+    }
+
+    public bool TryToCreatePrefab(GameObject prefab, GameObject parent)
+    {
+        if (Physics.Raycast(leftController.transform.position,
+            leftController.transform.forward, out RaycastHit hit))
+        {
+            if (!hit.collider.CompareTag("MeasurementPrefab"))
+            {
+                prefab = Instantiate(prefab, hit.point, Quaternion.identity, parent.transform);
+                prefab.transform.localScale = 2f * sphereRadius * Vector3.one;
+
+                return true;
+            }
+        }
         return false;
     }
 
@@ -251,57 +235,5 @@ public class GameManager : MonoBehaviour {
             }
 
         }
-    }
-
-    // Measure
-
-    private void HandleMeasure()
-    {
-        if (spheres.Count >= 2)
-        {
-            foreach (GameObject sphere in spheres)
-            {
-                Destroy(sphere);
-            }
-            spheres.Clear();
-        }
-
-        if (TryToCreateSphere(out GameObject newSphere))
-        {
-            spheres.Add(newSphere);
-        }
-
-        if (spheres.Count == 2)
-        {
-            float distance = Vector3.Distance(spheres[0].transform.position, spheres[1].transform.position);
-            Debug.Log("Distance between spheres: " + distance);
-
-            OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
-            {
-                measurementValue = distance
-            });
-        }
-    }
-
-    // Clipping 
-    public void OnXSliderValueChanged(float value)
-    {
-        Debug.Log("XSlider changed: " + value);
-        volumetricMaterial.SetFloat("_SliceX", value);
-        //volumetricMaterial.SetFloat("_SliceAxis1Max", 1 - value);
-    }
-
-    public void OnYSliderValueChanged(float value)
-    {
-        Debug.Log("YSlider changed: " + value);
-        volumetricMaterial.SetFloat("_SliceY", value);
-        //volumetricMaterial.SetFloat("_SliceAxis2Max", 1 - value);
-    }
-
-    public void OnZSliderValueChanged(float value)
-    {
-        Debug.Log("ZSlider changed: " + value);
-        volumetricMaterial.SetFloat("_SliceZ", value);
-        //volumetricMaterial.SetFloat("_SliceAxis3Max", 1 - value);
     }
 }

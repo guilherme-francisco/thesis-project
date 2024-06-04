@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class MeasurementToolsUI : MonoBehaviour
 {
-    public MeasurementToolsUI Instance { get; private set; }   
+    public static MeasurementToolsUI Instance { get; private set; }   
     public enum MeasurementTypes {
         Default,
         Linear,
@@ -43,5 +43,9 @@ public class MeasurementToolsUI : MonoBehaviour
 
     private void Hide() {
         gameObject.SetActive(false);
+    }
+
+    public MeasurementTypes GetMeasurementTypes() {
+        return measurementType;
     }
 }

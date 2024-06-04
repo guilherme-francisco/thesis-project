@@ -6,9 +6,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 
-public class MeasurementPanelUI : MonoBehaviour
+public class MeasurementInformationUI : MonoBehaviour
 {
-    public static MeasurementPanelUI Instance { get; private set; }
+    public static MeasurementInformationUI Instance { get; private set; }
 
     [SerializeField] private TextMeshProUGUI measurementValueText;
     [SerializeField] private Button acceptButton;
@@ -39,7 +39,7 @@ public class MeasurementPanelUI : MonoBehaviour
         acceptButton.onClick.AddListener(handleAcceptButtonEvent);
         rejectButton.onClick.AddListener(() => { Hide(); });
 
-        GameManager.Instance.OnMeasurementEvent += HandleMeasurementEvent;
+        MeasurementManager.Instance.OnMeasurementEvent += HandleMeasurementEvent;
         Debug.Log("Subscription to OnMeasurementEvent");
         Hide();
     }
@@ -54,7 +54,7 @@ public class MeasurementPanelUI : MonoBehaviour
         Hide();
     }
 
-    private void HandleMeasurementEvent(object sender, GameManager.OnMeasurementEventArgs args)
+    private void HandleMeasurementEvent(object sender, MeasurementManager.OnMeasurementEventArgs args)
     {
         measurementValue = args.measurementValue;
 

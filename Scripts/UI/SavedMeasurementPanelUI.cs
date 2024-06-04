@@ -19,11 +19,11 @@ public class SavedMeasurementPanelUI : MonoBehaviour
     private void Start()
     {
         SavedMeasuramentValuesList = new List<float>();
-        MeasurementPanelUI.Instance.onSaveMeasurementEvent += MeasurementPanelUI_OnSaveMeasurament;
+        MeasurementInformationUI.Instance.onSaveMeasurementEvent += MeasurementPanelUI_OnSaveMeasurament;
         Hide();
     }
 
-    private void MeasurementPanelUI_OnSaveMeasurament(object sender, MeasurementPanelUI.onSaveMeasurementEventArgs e)
+    private void MeasurementPanelUI_OnSaveMeasurament(object sender, MeasurementInformationUI.onSaveMeasurementEventArgs e)
     {
         // Save measurement
         SavedMeasuramentValuesList.Add(e.measurementValue);

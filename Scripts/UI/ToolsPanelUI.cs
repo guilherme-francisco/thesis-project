@@ -9,7 +9,6 @@ public class ToolsPanelUI : MonoBehaviour
 {
     public event EventHandler OnNavigateEvent;
 
-    [SerializeField] private GameObject clippingPanelUI;
     
     [SerializeField] private GameObject dicomImageUI;
 
@@ -49,7 +48,6 @@ public class ToolsPanelUI : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        clippingPanelUI.SetActive(false);
     }
 
     private void Start()
@@ -78,9 +76,8 @@ public class ToolsPanelUI : MonoBehaviour
 
     private void OnMenuButtonPerformed(InputAction.CallbackContext context)
     {
-        if (clippingPanelUI.activeSelf || dicomImageUI.activeSelf || measurementToolsUI.activeSelf) 
+        if (dicomImageUI.activeSelf || measurementToolsUI.activeSelf) 
         {
-            clippingPanelUI.SetActive(false);
             dicomImageUI.SetActive(false);
             measurementToolsUI.SetActive(false);
             return;
@@ -94,26 +91,17 @@ public class ToolsPanelUI : MonoBehaviour
         currentMode = mode;
         clickedButton.Select();
 
-        if (mode == Modes.Clip)
-        {
-            clippingPanelUI.SetActive(true);
-            Hide();
-        } else { 
-            clippingPanelUI.SetActive(false);
-        }
-
         if(mode == Modes.Navigate) { 
             OnNavigateEvent?.Invoke(this, EventArgs.Empty);
         }
 
         if (mode == Modes.Measure) {
             measurementToolsUI.SetActive(true);
-            Hide();
         } else { 
             measurementToolsUI.SetActive(false);
         }
-
         Debug.Log("Current Mode: " + mode.ToString());
+        Hide();
     }
 
     public Modes GetMode()
