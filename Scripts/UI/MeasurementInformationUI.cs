@@ -11,6 +11,7 @@ public class MeasurementInformationUI : MonoBehaviour
     public static MeasurementInformationUI Instance { get; private set; }
 
     [SerializeField] private TextMeshProUGUI measurementValueText;
+    [SerializeField] private TextMeshProUGUI realMeasurementValueText;
     [SerializeField] private Button acceptButton;
     [SerializeField] private Button rejectButton;
     private float measurementValue;
@@ -61,6 +62,8 @@ public class MeasurementInformationUI : MonoBehaviour
         Debug.Log("Received measurement value: " + measurementValue);
             
         measurementValueText.text = measurementValue.ToString("F2") + " m";
+
+        realMeasurementValueText.text = ScaleManager.Instance.GetRealMeasurement(measurementValue).ToString("F2") + " mm";
 
         Show();
     }

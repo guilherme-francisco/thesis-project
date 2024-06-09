@@ -1,11 +1,22 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
+using System;
+using UnityEngine.InputSystem.Interactions;
 
 [RequireComponent( typeof(LineRenderer) )]
 public class CurvedLineRenderer : MonoBehaviour 
 {
 	//PUBLIC
+	public static CurvedLineRenderer Instance { get; private set; }
+	public event EventHandler<OnMeasurementEventArgs> OnMeasurementEvent;
+    public class OnMeasurementEventArgs : EventArgs
+    {
+        public float measurementValue;
+    }
+
+
 	public float lineSegmentSize = 0.15f;
 	public float lineWidth = 0.1f;
 	[Header("Gizmos")]
@@ -19,8 +30,49 @@ public class CurvedLineRenderer : MonoBehaviour
 
 	public Material material;
 
-	// Update is called once per frame
-	public void Update () 
+	private float lineLength = 0;
+
+	private void Awake() {
+		Instance = this;	
+	}
+
+	private void Start() {
+		InputActionsManager.Instance.InputActions.XRIRightHand.MenuButton.performed += MenuButton_Performed;
+	}
+
+    private void MenuButton_Performed(InputAction.CallbackContext context)
+    {
+        if (context.interaction is not HoldInteraction) {
+			return;
+		} 
+
+		if (ToolsPanelUI.Instance.GetMode() != ToolsPanelUI.Modes.Measure || 
+			MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Curved) 
+		{
+				return;
+		}
+
+		OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+			measurementValue = lineLength
+		});
+
+		ResetVector();
+    }
+
+    private void ResetVector()
+    {
+		foreach(CurvedLinePoint linePoint in linePoints) {
+			Destroy(linePoint.gameObject);
+		}
+
+        linePoints = new CurvedLinePoint[0];
+		linePositions = new Vector3[0];
+		linePositionsOld = new Vector3[0];		
+    }
+
+    // Update is called once per frame
+
+    public void Update () 
 	{
 		GetPoints();
 		SetPointsToLine();
@@ -29,7 +81,7 @@ public class CurvedLineRenderer : MonoBehaviour
 	void GetPoints()
 	{
 		//find curved points in children
-		linePoints = this.GetComponentsInChildren<CurvedLinePoint>();
+		linePoints = GetComponentsInChildren<CurvedLinePoint>();
 
 		//add positions
 		linePositions = new Vector3[linePoints.Length];
@@ -72,8 +124,8 @@ public class CurvedLineRenderer : MonoBehaviour
             line.SetWidth(lineWidth, lineWidth);
     		line.material = material;
 
-			//float lineLength = CalculateLineLength(smoothedPoints);
-            //Debug.Log("Line Length: " + lineLength);
+			lineLength = CalculateLineLength(smoothedPoints);
+            Debug.Log("Line Length: " + lineLength);
 		}
 	}
 

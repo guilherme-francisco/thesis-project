@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -27,13 +28,11 @@ public class CirclePrefab : MonoBehaviour
 
 
     private void Update() {
-        if (rayInteractor != null) {
-            if (rayInteractor.gameObject.name == RIGHT_CONTROLLER) 
-            ChangeLocalScaleWithRighttHand();
-            else if (rayInteractor.gameObject.name == LEFT_CONTROLLER) 
-            ChangeLocalScaleWithLeftHand();
-        }
-        
+        XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
+        Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
+
+        transform.localScale += new Vector3(0f, thumbstickInput.x * Time.deltaTime, thumbstickInput.x * Time.deltaTime);
+    
         radiusValueText.text = gameObject.transform.localScale.y.ToString("F2") + " m";
         areaValueText.text = (Math.Pow(gameObject.transform.localScale.y, 2) * Math.PI).ToString("F2") + " m";
     }
@@ -45,8 +44,8 @@ public class CirclePrefab : MonoBehaviour
 
         if (Mathf.Abs(thumbstickInput.x) > 0.5f)
         {
-            float scroll = thumbstickInput.x * Time.deltaTime;
-            transform.localScale = new Vector3(0.01f, scroll, scroll);
+            float scroll = thumbstickInput.x;
+            transform.localScale += new Vector3(0f, 0.1f, 0.1f);
         }
     }
 

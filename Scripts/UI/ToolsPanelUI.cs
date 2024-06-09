@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 using UnityEngine.UI;
 
 public class ToolsPanelUI : MonoBehaviour
@@ -24,7 +25,8 @@ public class ToolsPanelUI : MonoBehaviour
         Measure,
         Tag,
         Clip,
-        Navigate
+        Navigate,
+        Dicom
     }
 
     public enum Navigation {
@@ -71,11 +73,16 @@ public class ToolsPanelUI : MonoBehaviour
 
     private void OnDicomButtonClick()
     {
+        currentMode = Modes.Dicom;
         dicomImageUI.SetActive(true);
     }
 
     private void OnMenuButtonPerformed(InputAction.CallbackContext context)
     {
+        if (context.interaction is not TapInteraction) {
+            return;
+        }
+
         if (dicomImageUI.activeSelf || measurementToolsUI.activeSelf) 
         {
             dicomImageUI.SetActive(false);

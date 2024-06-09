@@ -5,6 +5,10 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
 
     public static GameManager Instance { get; private set; }
+    public event EventHandler<OnScaleChangeEventArgs> OnScaleChange;
+    public class OnScaleChangeEventArgs : EventArgs {
+        public float scale;
+    }
 
     [Header("3D Model")]
     [SerializeField] private GameObject model3D;
@@ -167,6 +171,11 @@ public class GameManager : MonoBehaviour {
             scale *= 1 + scroll * zoomSpeed;
             scale = Mathf.Clamp(scale, scaleMin, scaleMax);
             model3D.transform.localScale = new Vector3(scale, scale, scale);
+
+            OnScaleChange?.Invoke(this, new OnScaleChangeEventArgs {
+                scale = scale,
+            });
+
             if (Mathf.Approximately(scroll, 0)) isScaling = false;
         }
     }

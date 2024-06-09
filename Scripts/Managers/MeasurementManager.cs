@@ -36,7 +36,16 @@ public class MeasurementManager : MonoBehaviour
         measurementToolsUI = MeasurementToolsUI.Instance;
 
 		InputActionsManager.Instance.InputActions.XRILeftHand.Select.performed += OnSelectPerformed;
+        CurvedLineRenderer.Instance.OnMeasurementEvent += CurvedLineRenderer_OnMeasurementEvent;
     }
+
+    private void CurvedLineRenderer_OnMeasurementEvent(object sender, CurvedLineRenderer.OnMeasurementEventArgs e)
+    {
+        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+            measurementValue = e.measurementValue,
+        });
+    }
+
 
     private void OnSelectPerformed(InputAction.CallbackContext context)
     {
@@ -44,9 +53,11 @@ public class MeasurementManager : MonoBehaviour
             switch (measurementToolsUI.GetMeasurementTypes())
             {
                 case MeasurementToolsUI.MeasurementTypes.Linear:
+                    circlePrefab.SetActive(false);
                     HandleLinearMeasure();
                     break;
                 case MeasurementToolsUI.MeasurementTypes.Curved:
+                    circlePrefab.SetActive(false);
                     HandleCurvedMeasure();
                     break;
                 case MeasurementToolsUI.MeasurementTypes.Radius:
@@ -56,13 +67,18 @@ public class MeasurementManager : MonoBehaviour
                     circlePrefab.SetActive(false);
                     break;
             }
+        } else {
+            circlePrefab.SetActive(false);
         }
     }
 
     private void HandleRadiusMeasure()
     {
-        circlePrefab.SetActive(true);
-        circlePrefab.transform.position = spawnPoint.position;
+        if (!circlePrefab.activeSelf)
+        {           
+            circlePrefab.SetActive(true);
+            circlePrefab.transform.position = spawnPoint.position;
+        }
     }
 
 

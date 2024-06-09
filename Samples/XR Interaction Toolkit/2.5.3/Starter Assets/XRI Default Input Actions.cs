@@ -894,7 +894,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
                     ""id"": ""a2d49a12-88f8-4acc-8ac5-6ccb59fd9243"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold,Tap"",
                     ""initialStateCheck"": false
                 }
             ],

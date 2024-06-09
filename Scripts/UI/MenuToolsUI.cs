@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 using UnityEngine.UI;
 
 public class MenuToolsUI : MonoBehaviour
@@ -41,6 +42,11 @@ public class MenuToolsUI : MonoBehaviour
 
     private void OnMenuButtonPerformed(InputAction.CallbackContext context)
     {
+
+        if (context.interaction is not TapInteraction) {
+            return;
+        }
+        
         Debug.Log("Right Menu Button performed!");
 
         if (minimap.activeSelf || dicomImageUI.activeSelf || measurementToolsUI.activeSelf) 
