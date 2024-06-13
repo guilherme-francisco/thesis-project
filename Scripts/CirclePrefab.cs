@@ -10,6 +10,7 @@ public class CirclePrefab : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI radiusValueText;
     [SerializeField] private TextMeshProUGUI areaValueText;
+    [SerializeField] private TextMeshProUGUI diameterValueText;
 
     private XRRayInteractor rayInteractor;
     private const string RIGHT_CONTROLLER = "Right Controller";
@@ -32,9 +33,10 @@ public class CirclePrefab : MonoBehaviour
         Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
 
         transform.localScale += new Vector3(0f, thumbstickInput.x * Time.deltaTime, thumbstickInput.x * Time.deltaTime);
-    
-        radiusValueText.text = gameObject.transform.localScale.y.ToString("F2") + " m";
-        areaValueText.text = (Math.Pow(gameObject.transform.localScale.y, 2) * Math.PI).ToString("F2") + " m";
+
+        diameterValueText.text = gameObject.transform.localScale.y.ToString("F2") + " m";
+        radiusValueText.text = (gameObject.transform.localScale.y / 2).ToString("F2") + " m";
+        areaValueText.text = (Math.Pow(gameObject.transform.localScale.y / 2, 2) * Math.PI).ToString("F2") + " m";
     }
 
     private void ChangeLocalScaleWithLeftHand()

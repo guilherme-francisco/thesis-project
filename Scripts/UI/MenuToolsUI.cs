@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class MenuToolsUI : MonoBehaviour
 {
+    public static MenuToolsUI Instance { get; private set;}
+    public event EventHandler OnLeaveButtonEvent;
     [SerializeField] private Button leaveButton;
     [SerializeField] private Button dicomButton;
     [SerializeField] private Button measurementButton;
@@ -19,10 +21,13 @@ public class MenuToolsUI : MonoBehaviour
     [SerializeField] private GameObject sliders;
 
     [SerializeField] private GameObject minimap;
-    [SerializeField] private GameObject measurementToolsUI;    
-    [SerializeField] private Transform xrOrigin;
+    [SerializeField] private GameObject measurementToolsUI;  
 
     private ToolsPanelUI toolsPanelUI;
+
+    private void Awake() {
+        Instance = this;
+    }
 
     private void Start() {
         toolsPanelUI = ToolsPanelUI.Instance;
@@ -90,10 +95,7 @@ public class MenuToolsUI : MonoBehaviour
 
     private void OnLeaveClick()
     {
-        xrOrigin.localScale *= 10;
-        xrOrigin.position = Vector3.zero;
-        toolsPanelUI.SetMode(ToolsPanelUI.Modes.Default);
-        toolsPanelUI.SetNavigation(ToolsPanelUI.Navigation.Outside);
+        OnLeaveButtonEvent?.Invoke(this, EventArgs.Empty);
         Hide();
     }
 

@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour {
 
 
     [Header("Scale")]
-    [SerializeField] private float scaleMin = 0.01f;
+    [SerializeField] private float scaleMin = 0.001f;
 	[SerializeField] private float scaleMax = 100f;
 
     [Header("Navigation")]
@@ -35,6 +35,9 @@ public class GameManager : MonoBehaviour {
 
     [Header("Main Controller")]
     [SerializeField] private GameObject leftController;
+
+    [Header("Camera")]
+    [SerializeField] private GameObject cameraObject;
 
     private XRIDefaultInputActions inputActions;
 	private ToolsPanelUI toolsPanelUI;
@@ -55,14 +58,43 @@ public class GameManager : MonoBehaviour {
         inputActions = InputActionsManager.Instance.InputActions;
         toolsPanelUI = ToolsPanelUI.Instance;
         toolsPanelUI.OnNavigateEvent += ToolsPanelUI_OnNavigateEvent;
+        MenuToolsUI.Instance.OnLeaveButtonEvent += MenuToolsUI_OnLeaveButtonEvent;
     }
 
     private void ToolsPanelUI_OnNavigateEvent(object sender, EventArgs e)
     {
-        xrOrigin.localScale /= 20;
-        sphereRadius /= 2;
+        float originalScale = ScaleManager.Instance.GetOriginalScale();
+        ScaleManager.Instance.previousScale = model3D.transform.localScale.y;
+        model3D.transform.localScale = new Vector3(originalScale, originalScale, originalScale);
+        
+        OnScaleChange?.Invoke(this, new OnScaleChangeEventArgs {
+            scale = originalScale
+        });
+
+        Camera cameraComponent = cameraObject.GetComponent<Camera>();
+
+        cameraComponent.nearClipPlane = 0.0008f;
+        
+        xrOrigin.localScale /= 70;
+        sphereRadius /= 20;
         xrOrigin.position = model3D.transform.position;
         toolsPanelUI.SetNavigation(ToolsPanelUI.Navigation.Inside);
+    }
+
+    private void MenuToolsUI_OnLeaveButtonEvent(object sender, EventArgs e) {
+        float previousScale = ScaleManager.Instance.previousScale;
+        model3D.transform.localScale = new Vector3(previousScale, previousScale, previousScale);
+        ScaleManager.Instance.currentScale = previousScale;
+        xrOrigin.localScale *= 70;
+        sphereRadius *= 20;
+
+        Camera cameraComponent = cameraObject.GetComponent<Camera>();
+
+        cameraComponent.nearClipPlane = 0.01f;
+
+        xrOrigin.position = Vector3.zero;
+        toolsPanelUI.SetMode(ToolsPanelUI.Modes.Default);
+        toolsPanelUI.SetNavigation(ToolsPanelUI.Navigation.Outside);
     }
 
     void Update()

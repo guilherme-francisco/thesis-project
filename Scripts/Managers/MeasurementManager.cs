@@ -28,6 +28,8 @@ public class MeasurementManager : MonoBehaviour
     [SerializeField] private GameObject circlePrefab;
     [SerializeField] private Transform spawnPoint;
 
+    [SerializeField] private Transform xrOrigin;
+
     private void Awake() {
         Instance = this;
     }
@@ -37,7 +39,18 @@ public class MeasurementManager : MonoBehaviour
 
 		InputActionsManager.Instance.InputActions.XRILeftHand.Select.performed += OnSelectPerformed;
         CurvedLineRenderer.Instance.OnMeasurementEvent += CurvedLineRenderer_OnMeasurementEvent;
+        measurementToolsUI.OnMeasurementTypeChange += MeasurementToolsUI_OnMeasurementTypeChange;
     }
+
+    private void MeasurementToolsUI_OnMeasurementTypeChange(object sender, EventArgs e)
+    {
+        if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Radius) {
+            HandleRadiusMeasure();
+        } else {
+            circlePrefab.SetActive(false);
+        }
+    }
+
 
     private void CurvedLineRenderer_OnMeasurementEvent(object sender, CurvedLineRenderer.OnMeasurementEventArgs e)
     {
@@ -53,22 +66,12 @@ public class MeasurementManager : MonoBehaviour
             switch (measurementToolsUI.GetMeasurementTypes())
             {
                 case MeasurementToolsUI.MeasurementTypes.Linear:
-                    circlePrefab.SetActive(false);
                     HandleLinearMeasure();
                     break;
                 case MeasurementToolsUI.MeasurementTypes.Curved:
-                    circlePrefab.SetActive(false);
                     HandleCurvedMeasure();
                     break;
-                case MeasurementToolsUI.MeasurementTypes.Radius:
-                    HandleRadiusMeasure();
-                    break;
-                default:
-                    circlePrefab.SetActive(false);
-                    break;
             }
-        } else {
-            circlePrefab.SetActive(false);
         }
     }
 
@@ -78,6 +81,9 @@ public class MeasurementManager : MonoBehaviour
         {           
             circlePrefab.SetActive(true);
             circlePrefab.transform.position = spawnPoint.position;
+            if (ToolsPanelUI.Instance.GetNavigation() == ToolsPanelUI.Navigation.Inside) {
+                circlePrefab.transform.localScale =  xrOrigin.localScale;
+            }
         }
     }
 
