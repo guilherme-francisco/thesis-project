@@ -9,11 +9,13 @@ using UnityEngine.UI;
 public class ToolsPanelUI : MonoBehaviour
 {
     public event EventHandler OnNavigateEvent;
+    public event EventHandler OnModeChange;
 
-    
+    [Header("UIs")]
     [SerializeField] private GameObject dicomImageUI;
 
     [SerializeField] private GameObject measurementToolsUI; 
+    [SerializeField] private GameObject settingsUI;
     public static ToolsPanelUI Instance { get; private set; }
 
     public enum Modes
@@ -26,7 +28,8 @@ public class ToolsPanelUI : MonoBehaviour
         Tag,
         Clip,
         Navigate,
-        Dicom
+        Dicom,
+        Settings
     }
 
     public enum Navigation {
@@ -34,6 +37,7 @@ public class ToolsPanelUI : MonoBehaviour
         Inside,
     }
 
+    [Header("Buttons")]
     [SerializeField] private Button moveButton;
     [SerializeField] private Button rotateButton;
     [SerializeField] private Button scaleButton;
@@ -42,6 +46,7 @@ public class ToolsPanelUI : MonoBehaviour
     [SerializeField] private Button clipButton;
     [SerializeField] private Button navigateButton;
     [SerializeField] private Button dicomButton;
+    [SerializeField] private Button settingsButton;
 
     private Modes currentMode = Modes.Default;
 
@@ -62,19 +67,14 @@ public class ToolsPanelUI : MonoBehaviour
         tagButton.onClick.AddListener(() => OnButtonClick(tagButton, Modes.Tag));
         clipButton.onClick.AddListener(() => OnButtonClick(clipButton, Modes.Clip)); 
         navigateButton.onClick.AddListener(() => OnButtonClick(navigateButton, Modes.Navigate));
-        dicomButton.onClick.AddListener(() => OnDicomButtonClick());
+        dicomButton.onClick.AddListener(() => OnButtonClick(dicomButton, Modes.Dicom));
+        settingsButton.onClick.AddListener(() => OnButtonClick(settingsButton, Modes.Settings));
         
         XRIDefaultInputActions inputAction = InputActionsManager.Instance.InputActions;
         inputAction.XRIRightHand.MenuButton.performed += OnMenuButtonPerformed;
 
         dicomImageUI.SetActive(false);
         Hide();
-    }
-
-    private void OnDicomButtonClick()
-    {
-        currentMode = Modes.Dicom;
-        dicomImageUI.SetActive(true);
     }
 
     private void OnMenuButtonPerformed(InputAction.CallbackContext context)
@@ -107,6 +107,21 @@ public class ToolsPanelUI : MonoBehaviour
         } else { 
             measurementToolsUI.SetActive(false);
         }
+
+        if (mode == Modes.Settings) {
+            settingsUI.SetActive(true);
+        } else {
+            settingsUI.SetActive(false);
+        }
+
+        if (mode == Modes.Dicom) {
+            currentMode = Modes.Dicom;
+            dicomImageUI.SetActive(true);
+        } else {
+            dicomImageUI.SetActive(false);
+        }
+
+        OnModeChange?.Invoke(this, EventArgs.Empty);
         Debug.Log("Current Mode: " + mode.ToString());
         Hide();
     }

@@ -277,4 +277,9 @@ public class GameManager : MonoBehaviour {
 
         }
     }
+
+
+    public float GetSphereRadiusSize() {
+        return sphereRadius;
+    }
 }

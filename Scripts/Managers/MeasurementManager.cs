@@ -5,7 +5,13 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class MeasurementManager : MonoBehaviour
-{
+{   
+    public enum LinearMeasurementMethods {
+        Sphere,
+        TwoHands,
+        HandPosition
+    }
+
     public static MeasurementManager Instance { get; private set; }
     public event EventHandler<OnMeasurementEventArgs> OnMeasurementEvent;
     public class OnMeasurementEventArgs : EventArgs
@@ -13,22 +19,28 @@ public class MeasurementManager : MonoBehaviour
         public float measurementValue;
     }
 
-    // Linear
+    [Header("Linear")]
+    [SerializeField] private GameObject measureByPosition;
+    [SerializeField] private GameObject measureByHands;
     [SerializeField] private float sphereRadius = 0.1f;
     [SerializeField] private GameObject spherePrefab;
 
     private MeasurementToolsUI measurementToolsUI;
-    private List<GameObject> spheres = new();
+    private readonly List<GameObject> spheres = new();
 
-    // Curved
+    [Header("Curved")]
     [SerializeField] private GameObject curvedLineRenderer;
     [SerializeField] private GameObject CurvedLinePoint;
 
-    // Radius
+    [Header("Radius")]
     [SerializeField] private GameObject circlePrefab;
     [SerializeField] private Transform spawnPoint;
 
+    [Header("Scale")]
     [SerializeField] private Transform xrOrigin;
+
+    // MeasurementMethods
+    private LinearMeasurementMethods currentLinearMeasurementMethod = LinearMeasurementMethods.Sphere;
 
     private void Awake() {
         Instance = this;
@@ -39,13 +51,28 @@ public class MeasurementManager : MonoBehaviour
 
 		InputActionsManager.Instance.InputActions.XRILeftHand.Select.performed += OnSelectPerformed;
         CurvedLineRenderer.Instance.OnMeasurementEvent += CurvedLineRenderer_OnMeasurementEvent;
+        MeasureByPosition.Instance.OnMeasurementEvent += MeasureByPosition_OnMeasurementEvent;
         measurementToolsUI.OnMeasurementTypeChange += MeasurementToolsUI_OnMeasurementTypeChange;
     }
+
+    private void MeasureByPosition_OnMeasurementEvent(object sender, MeasureByPosition.OnMeasurementEventArgs e)
+    {
+        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+            measurementValue = e.measurementValue,
+        });
+    }
+
 
     private void MeasurementToolsUI_OnMeasurementTypeChange(object sender, EventArgs e)
     {
         if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Radius) {
             HandleRadiusMeasure();
+        } else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Linear) {
+            if (currentLinearMeasurementMethod == LinearMeasurementMethods.TwoHands) {
+                measureByHands.SetActive(true);
+            } else if (currentLinearMeasurementMethod == LinearMeasurementMethods.HandPosition) {
+                measureByPosition.SetActive(true);
+            }
         } else {
             circlePrefab.SetActive(false);
         }
@@ -66,7 +93,9 @@ public class MeasurementManager : MonoBehaviour
             switch (measurementToolsUI.GetMeasurementTypes())
             {
                 case MeasurementToolsUI.MeasurementTypes.Linear:
-                    HandleLinearMeasure();
+                    if(currentLinearMeasurementMethod == LinearMeasurementMethods.Sphere) {
+                        HandleLinearMeasure();
+                    }
                     break;
                 case MeasurementToolsUI.MeasurementTypes.Curved:
                     HandleCurvedMeasure();
@@ -122,5 +151,12 @@ public class MeasurementManager : MonoBehaviour
         }
     } 
 
+    public LinearMeasurementMethods GetCurrentLinearMeasurementMethod() {
+        return currentLinearMeasurementMethod;
+    }
+
+    public void SetCurrentLinearMeasurementMethod(LinearMeasurementMethods linearMeasurementMethod) {
+        currentLinearMeasurementMethod = linearMeasurementMethod;
+    }
 
 }

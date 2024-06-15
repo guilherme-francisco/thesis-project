@@ -34,6 +34,7 @@ public class InputActionsManager : MonoBehaviour
         InputActions.XRIRightHand.SecondaryButton.Enable();
         InputActions.XRIRightHand.Move.Enable();
         InputActions.XRIRightHand.MenuButton.Enable();
+        InputActions.XRIRightHand.Select.Enable();
     }
 
     private void OnDisable()
@@ -49,6 +50,7 @@ public class InputActionsManager : MonoBehaviour
         InputActions.XRIRightHand.SecondaryButton.Disable();
         InputActions.XRIRightHand.Move.Disable();
         InputActions.XRIRightHand.MenuButton.Disable();
+        InputActions.XRIRightHand.Select.Disable();
     }
 
 
