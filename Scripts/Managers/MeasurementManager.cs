@@ -12,6 +12,12 @@ public class MeasurementManager : MonoBehaviour
         HandPosition
     }
 
+    public enum CurvedMeasurementMethods {
+        
+        Sphere,
+        HandPosition
+    }
+
     public static MeasurementManager Instance { get; private set; }
     public event EventHandler<OnMeasurementEventArgs> OnMeasurementEvent;
     public class OnMeasurementEventArgs : EventArgs
@@ -32,6 +38,8 @@ public class MeasurementManager : MonoBehaviour
     [SerializeField] private GameObject curvedLineRenderer;
     [SerializeField] private GameObject CurvedLinePoint;
 
+    [SerializeField] private GameObject  curvedMeasureByPosition;
+
     [Header("Radius")]
     [SerializeField] private GameObject circlePrefab;
     [SerializeField] private Transform spawnPoint;
@@ -42,6 +50,8 @@ public class MeasurementManager : MonoBehaviour
     // MeasurementMethods
     private LinearMeasurementMethods currentLinearMeasurementMethod = LinearMeasurementMethods.Sphere;
 
+    private CurvedMeasurementMethods currentCurvedMeasurementMethod = CurvedMeasurementMethods.Sphere;
+
     private void Awake() {
         Instance = this;
     }
@@ -50,7 +60,8 @@ public class MeasurementManager : MonoBehaviour
         measurementToolsUI = MeasurementToolsUI.Instance;
 
 		InputActionsManager.Instance.InputActions.XRILeftHand.Select.performed += OnSelectPerformed;
-        CurvedLineRenderer.Instance.OnMeasurementEvent += CurvedLineRenderer_OnMeasurementEvent;
+        curvedLineRenderer.GetComponent<CurvedLineRenderer>().OnMeasurementEvent += CurvedLineRenderer_OnMeasurementEvent;
+        measureByHands.GetComponent<CurvedLineRenderer>().OnMeasurementEvent += CurvedLineRenderer_OnMeasurementEvent;
         MeasureByPosition.Instance.OnMeasurementEvent += MeasureByPosition_OnMeasurementEvent;
         measurementToolsUI.OnMeasurementTypeChange += MeasurementToolsUI_OnMeasurementTypeChange;
     }
@@ -72,6 +83,10 @@ public class MeasurementManager : MonoBehaviour
                 measureByHands.SetActive(true);
             } else if (currentLinearMeasurementMethod == LinearMeasurementMethods.HandPosition) {
                 measureByPosition.SetActive(true);
+            }
+        } else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Curved) {
+            if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.HandPosition) {
+
             }
         } else {
             circlePrefab.SetActive(false);
@@ -98,7 +113,11 @@ public class MeasurementManager : MonoBehaviour
                     }
                     break;
                 case MeasurementToolsUI.MeasurementTypes.Curved:
-                    HandleCurvedMeasure();
+                    if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.Sphere) {
+                        HandleCurvedMeasure();
+                    } else if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.HandPosition) {
+                        curvedMeasureByPosition.SetActive(true);
+                    }
                     break;
             }
         }
@@ -120,6 +139,12 @@ public class MeasurementManager : MonoBehaviour
     private void HandleCurvedMeasure()
     {
         GameManager.Instance.TryToCreatePrefab(CurvedLinePoint, curvedLineRenderer);
+    }
+
+    public void HandleCurvedMeasureByHandPosition(Vector3 position, Vector3 scale) {
+        GameObject prefab = Instantiate(CurvedLinePoint, position, Quaternion.identity, curvedLineRenderer.transform);
+
+        prefab.transform.localScale = scale;
     }
 
 
@@ -157,6 +182,14 @@ public class MeasurementManager : MonoBehaviour
 
     public void SetCurrentLinearMeasurementMethod(LinearMeasurementMethods linearMeasurementMethod) {
         currentLinearMeasurementMethod = linearMeasurementMethod;
+    }
+
+    public CurvedMeasurementMethods GetCurrentCurvedMeasurementMethod() {
+        return currentCurvedMeasurementMethod;
+    }
+
+    public void SetCurrentCurvedMeasurementMethod(CurvedMeasurementMethods curvedMeasurementMethod) {
+        currentCurvedMeasurementMethod = curvedMeasurementMethod;
     }
 
 }

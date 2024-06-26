@@ -31,6 +31,13 @@ public class MeasureByPosition : MonoBehaviour
 
     private void LeftHand_OnSelectPerformed(InputAction.CallbackContext context)
     {
+
+        if (ToolsPanelUI.Instance.GetMode() != ToolsPanelUI.Modes.Measure ||
+            MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Linear  ||
+            MeasurementManager.Instance.GetCurrentCurvedMeasurementMethod() != MeasurementManager.CurvedMeasurementMethods.HandPosition) {
+            return;
+        }
+
         leftHandSphere.SetActive(true);
         float sphereRadius = GameManager.Instance.GetSphereRadiusSize();
         
@@ -43,6 +50,12 @@ public class MeasureByPosition : MonoBehaviour
 
     private void RightHand_OnSelectPerformed(InputAction.CallbackContext context)
     {
+         if (ToolsPanelUI.Instance.GetMode() != ToolsPanelUI.Modes.Measure ||
+            MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Linear  ||
+            MeasurementManager.Instance.GetCurrentCurvedMeasurementMethod() != MeasurementManager.CurvedMeasurementMethods.HandPosition) {
+            return;
+        }
+
         rightHandSphere.SetActive(true);
         float sphereRadius = GameManager.Instance.GetSphereRadiusSize();
         
@@ -63,6 +76,11 @@ public class MeasureByPosition : MonoBehaviour
 
     private void Hide() {
         gameObject.SetActive(false);
+    }
+
+    private void Update() {
+        if (MenuToolsUI.Instance.isActiveAndEnabled || ToolsPanelUI.Instance.isActiveAndEnabled)
+            Hide();
     }
 
 }

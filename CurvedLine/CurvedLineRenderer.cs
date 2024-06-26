@@ -33,7 +33,11 @@ public class CurvedLineRenderer : MonoBehaviour
 	private float lineLength = 0;
 
 	private void Awake() {
-		Instance = this;	
+		if (Instance == null) {
+			Instance = this;	
+		} else {
+			Debug.Log("Duplicated Curved Line Rendere");
+		}
 	}
 
 	private void Start() {
@@ -42,20 +46,26 @@ public class CurvedLineRenderer : MonoBehaviour
 
     private void MenuButton_Performed(InputAction.CallbackContext context)
     {
-        if (context.interaction is not HoldInteraction) {
+        if (context.interaction is not HoldInteraction && context.performed) {
 			return;
 		} 
 
 		if (ToolsPanelUI.Instance.GetMode() != ToolsPanelUI.Modes.Measure || 
-			MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Curved) 
+			(MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Curved 
+			&& MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Linear
+			&& MeasurementManager.Instance.GetCurrentLinearMeasurementMethod() != MeasurementManager.LinearMeasurementMethods.TwoHands)) 
 		{
 				return;
 		}
 
+		if (lineLength == 0) {
+			return;
+		}	
+
 		OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
 			measurementValue = lineLength
 		});
-
+		
 		ResetVector();
     }
 
