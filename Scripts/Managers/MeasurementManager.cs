@@ -18,6 +18,11 @@ public class MeasurementManager : MonoBehaviour
         HandPosition
     }
 
+    public enum RadiusMeasurementMethods {
+        Sphere,
+        Prefab
+    }
+
     public static MeasurementManager Instance { get; private set; }
     public event EventHandler<OnMeasurementEventArgs> OnMeasurementEvent;
     public class OnMeasurementEventArgs : EventArgs
@@ -43,7 +48,7 @@ public class MeasurementManager : MonoBehaviour
     [Header("Radius")]
     [SerializeField] private GameObject circlePrefab;
     [SerializeField] private Transform spawnPoint;
-
+    [SerializeField] private GameObject circleByThreePoints;
     [Header("Scale")]
     [SerializeField] private Transform xrOrigin;
 
@@ -51,6 +56,8 @@ public class MeasurementManager : MonoBehaviour
     private LinearMeasurementMethods currentLinearMeasurementMethod = LinearMeasurementMethods.Sphere;
 
     private CurvedMeasurementMethods currentCurvedMeasurementMethod = CurvedMeasurementMethods.Sphere;
+
+    private RadiusMeasurementMethods currentRadiusMeasurementMethod = RadiusMeasurementMethods.Prefab;
 
     private void Awake() {
         Instance = this;
@@ -73,9 +80,19 @@ public class MeasurementManager : MonoBehaviour
         });
     }
 
+    private void DisableUIs() {
+        circlePrefab.SetActive(false);
+        circleByThreePoints.SetActive(false);
+        measureByHands.SetActive(false);
+        measureByPosition.SetActive(false);
+        curvedMeasureByPosition.SetActive(false);
+        circleByThreePoints.SetActive(false);
+    }
 
     private void MeasurementToolsUI_OnMeasurementTypeChange(object sender, EventArgs e)
     {
+        DisableUIs();
+
         if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Radius) {
             HandleRadiusMeasure();
         } else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Linear) {
@@ -86,10 +103,8 @@ public class MeasurementManager : MonoBehaviour
             }
         } else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Curved) {
             if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.HandPosition) {
-
+                curvedMeasureByPosition.SetActive(true);
             }
-        } else {
-            circlePrefab.SetActive(false);
         }
     }
 
@@ -119,18 +134,60 @@ public class MeasurementManager : MonoBehaviour
                         curvedMeasureByPosition.SetActive(true);
                     }
                     break;
+                case MeasurementToolsUI.MeasurementTypes.Radius:
+                    HandleRadiusMeasure();
+                    break;
             }
         }
     }
 
     private void HandleRadiusMeasure()
     {
-        if (!circlePrefab.activeSelf)
+        
+        Debug.Log(InputActionsManager.Instance.InputActions.XRILeftHand.Select.phase);
+        if (!circlePrefab.activeSelf && currentRadiusMeasurementMethod == RadiusMeasurementMethods.Prefab)
         {           
             circlePrefab.SetActive(true);
             circlePrefab.transform.position = spawnPoint.position;
             if (ToolsPanelUI.Instance.GetNavigation() == ToolsPanelUI.Navigation.Inside) {
                 circlePrefab.transform.localScale =  xrOrigin.localScale;
+            }
+        }
+        else if (currentRadiusMeasurementMethod == RadiusMeasurementMethods.Sphere && InputActionsManager.Instance.InputActions.XRILeftHand.Select.triggered) {
+            if (spheres.Count >= 3)
+            {
+                foreach (GameObject sphere in spheres)
+                {
+                    Destroy(sphere);
+                }
+                spheres.Clear();
+            }
+
+            if (GameManager.Instance.TryToCreateSphere(out GameObject newSphere))
+            {
+                spheres.Add(newSphere);
+            }
+
+            if (spheres.Count == 3)
+            {
+                
+                
+                circleByThreePoints.SetActive(true);
+                
+                Vector3 center = CircleByThreePoints.Instance.CreateCircle(spheres[0].transform.position, 
+                    spheres[1].transform.position, 
+                    spheres[2].transform.position
+                );
+                
+                float radius = Vector3.Distance(spheres[0].transform.position, spheres[1].transform.position);
+
+                
+                Debug.Log("Distance between spheres: " + radius);
+                
+                OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
+                {
+                    measurementValue = radius
+                });
             }
         }
     }
@@ -190,6 +247,14 @@ public class MeasurementManager : MonoBehaviour
 
     public void SetCurrentCurvedMeasurementMethod(CurvedMeasurementMethods curvedMeasurementMethod) {
         currentCurvedMeasurementMethod = curvedMeasurementMethod;
+    }
+
+    public RadiusMeasurementMethods GetCurrentRadiusMeasurementMethod() {
+        return currentRadiusMeasurementMethod;
+    }
+
+    public void SetCurrentRadiusMeasurementMethod(RadiusMeasurementMethods radiusMeasurementMethod) {
+        currentRadiusMeasurementMethod = radiusMeasurementMethod;
     }
 
 }
