@@ -28,6 +28,8 @@ public class MeasurementManager : MonoBehaviour
     public class OnMeasurementEventArgs : EventArgs
     {
         public float measurementValue;
+        public float secondMeasurementValue;
+        public MeasurementToolsUI.MeasurementTypes measurementTypes; 
     }
 
     [Header("Linear")]
@@ -77,6 +79,8 @@ public class MeasurementManager : MonoBehaviour
     {
         OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
             measurementValue = e.measurementValue,
+            secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(e.measurementValue),
+            measurementTypes = MeasurementToolsUI.MeasurementTypes.Linear
         });
     }
 
@@ -113,6 +117,8 @@ public class MeasurementManager : MonoBehaviour
     {
         OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
             measurementValue = e.measurementValue,
+            secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(e.measurementValue),
+            measurementTypes = MeasurementToolsUI.MeasurementTypes.Curved,
         });
     }
 
@@ -186,7 +192,9 @@ public class MeasurementManager : MonoBehaviour
                 
                 OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
                 {
-                    measurementValue = radius
+                    measurementValue = radius,
+                    secondMeasurementValue = (float)((float) Math.Pow(radius, 2) * Math.PI), 
+                    measurementTypes = MeasurementToolsUI.MeasurementTypes.Radius
                 });
             }
         }
@@ -228,7 +236,9 @@ public class MeasurementManager : MonoBehaviour
 
             OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
             {
-                measurementValue = distance
+                measurementValue = distance,
+                measurementTypes = MeasurementToolsUI.MeasurementTypes.Linear,
+                secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(distance)
             });
         }
     } 
