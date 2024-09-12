@@ -36,7 +36,7 @@ public class CurvedLineRenderer : MonoBehaviour
 		if (Instance == null) {
 			Instance = this;	
 		} else {
-			Debug.Log("Duplicated Curved Line Rendere");
+			Debug.Log("Duplicated Curved Line Renderer");
 		}
 	}
 
@@ -46,7 +46,7 @@ public class CurvedLineRenderer : MonoBehaviour
 
     private void MenuButton_Performed(InputAction.CallbackContext context)
     {
-        if (context.interaction is not HoldInteraction && context.performed) {
+        if (context.interaction is not HoldInteraction) {
 			return;
 		} 
 

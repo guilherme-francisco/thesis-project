@@ -33,8 +33,8 @@ public class MeasureByPosition : MonoBehaviour
     {
 
         if (ToolsPanelUI.Instance.GetMode() != ToolsPanelUI.Modes.Measure ||
-            MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Linear  ||
-            MeasurementManager.Instance.GetCurrentCurvedMeasurementMethod() != MeasurementManager.CurvedMeasurementMethods.HandPosition) {
+        (MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Linear  &&
+            MeasurementManager.Instance.GetCurrentCurvedMeasurementMethod() != MeasurementManager.CurvedMeasurementMethods.HandPosition)) {
             return;
         }
 
@@ -51,8 +51,8 @@ public class MeasureByPosition : MonoBehaviour
     private void RightHand_OnSelectPerformed(InputAction.CallbackContext context)
     {
          if (ToolsPanelUI.Instance.GetMode() != ToolsPanelUI.Modes.Measure ||
-            MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Linear  ||
-            MeasurementManager.Instance.GetCurrentCurvedMeasurementMethod() != MeasurementManager.CurvedMeasurementMethods.HandPosition) {
+            (MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Linear  &&
+            MeasurementManager.Instance.GetCurrentCurvedMeasurementMethod() != MeasurementManager.CurvedMeasurementMethods.HandPosition)) {
             return;
         }
 

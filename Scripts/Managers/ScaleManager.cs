@@ -30,7 +30,12 @@ public class ScaleManager : MonoBehaviour
     }
 
 
-    public float GetRealMeasurement(float value) {
+    public float GetRealMeasurement(float value, bool isVolume = false) {
+        if (isVolume) {
+            float scaleCorrection = originalScale / currentScale;
+            return (float)((float) value * Math.Pow(scaleCorrection, 3));
+        }
+        
         return value / (originalScale / currentScale);
     }    
 

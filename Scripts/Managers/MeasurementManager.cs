@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using GK;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -22,6 +23,11 @@ public class MeasurementManager : MonoBehaviour
         Sphere,
         Prefab
     }
+    public enum VolumeMeasurementMethods {
+        Sphere,
+        Prefab
+    }
+
 
     public static MeasurementManager Instance { get; private set; }
     public event EventHandler<OnMeasurementEventArgs> OnMeasurementEvent;
@@ -54,12 +60,18 @@ public class MeasurementManager : MonoBehaviour
     [Header("Scale")]
     [SerializeField] private Transform xrOrigin;
 
+    [Header("Volume")]
+    [SerializeField] private GameObject SphereVolumeMeasurement;
+    [SerializeField] private GameObject volumeHullRenderer;
+
     // MeasurementMethods
     private LinearMeasurementMethods currentLinearMeasurementMethod = LinearMeasurementMethods.Sphere;
 
     private CurvedMeasurementMethods currentCurvedMeasurementMethod = CurvedMeasurementMethods.Sphere;
 
     private RadiusMeasurementMethods currentRadiusMeasurementMethod = RadiusMeasurementMethods.Prefab;
+
+    private VolumeMeasurementMethods currentVolumeMeasurementMethod = VolumeMeasurementMethods.Prefab;
 
     private void Awake() {
         Instance = this;
@@ -73,7 +85,32 @@ public class MeasurementManager : MonoBehaviour
         measureByHands.GetComponent<CurvedLineRenderer>().OnMeasurementEvent += CurvedLineRenderer_OnMeasurementEvent;
         MeasureByPosition.Instance.OnMeasurementEvent += MeasureByPosition_OnMeasurementEvent;
         measurementToolsUI.OnMeasurementTypeChange += MeasurementToolsUI_OnMeasurementTypeChange;
+        SpherePrefab.Instance.OnMeasurementEvent += SpherePrefab_OnMeasurementEvent; 
+        VolumeHullRenderer.Instance.OnMeasurementEvent += VolumeHullRenderer_OnMeasurementEvent;
+
+        SpherePrefab spherePrefab = SphereVolumeMeasurement.GetComponent<SpherePrefab>();
+        spherePrefab.enabled = true;
     }
+
+    private void VolumeHullRenderer_OnMeasurementEvent(object sender, VolumeHullRenderer.OnMeasurementEventArgs e)
+    {
+        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+            measurementValue = e.measurementValue,
+            secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(e.measurementValue, isVolume: true),
+            measurementTypes = MeasurementToolsUI.MeasurementTypes.Volume
+        });
+    }
+
+
+    private void SpherePrefab_OnMeasurementEvent(object sender, SpherePrefab.OnMeasurementEventArgs e)
+    {
+        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+            measurementValue = e.measurementValue,
+            secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(e.measurementValue, isVolume: true),
+            measurementTypes = MeasurementToolsUI.MeasurementTypes.Volume
+        });
+    }
+
 
     private void MeasureByPosition_OnMeasurementEvent(object sender, MeasureByPosition.OnMeasurementEventArgs e)
     {
@@ -109,6 +146,17 @@ public class MeasurementManager : MonoBehaviour
             if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.HandPosition) {
                 curvedMeasureByPosition.SetActive(true);
             }
+        } else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Volume) {
+            if (currentVolumeMeasurementMethod == VolumeMeasurementMethods.Prefab) {
+                var gameObject = SphereVolumeMeasurement;
+
+                gameObject.transform.position = spawnPoint.position;
+                
+                if (ToolsPanelUI.Instance.GetNavigation() == ToolsPanelUI.Navigation.Inside) {
+                    gameObject.transform.localScale =  xrOrigin.localScale;
+                }
+                gameObject.SetActive(true);
+            }
         }
     }
 
@@ -142,6 +190,9 @@ public class MeasurementManager : MonoBehaviour
                     break;
                 case MeasurementToolsUI.MeasurementTypes.Radius:
                     HandleRadiusMeasure();
+                    break;
+                case MeasurementToolsUI.MeasurementTypes.Volume:
+                    HandleVolumeMeasure();
                     break;
             }
         }
@@ -201,6 +252,9 @@ public class MeasurementManager : MonoBehaviour
     }
 
 
+    private void HandleVolumeMeasure() {
+        GameManager.Instance.TryToCreatePrefab(spherePrefab, volumeHullRenderer);
+    }
     private void HandleCurvedMeasure()
     {
         GameManager.Instance.TryToCreatePrefab(CurvedLinePoint, curvedLineRenderer);
@@ -267,4 +321,11 @@ public class MeasurementManager : MonoBehaviour
         currentRadiusMeasurementMethod = radiusMeasurementMethod;
     }
 
+    public VolumeMeasurementMethods GetCurrentVolumeMeasurementMethod() {
+        return currentVolumeMeasurementMethod;
+    }
+
+    public void SetCurrentVolumeMeasurementMethod(VolumeMeasurementMethods volumeMeasurementMethod) {
+        currentVolumeMeasurementMethod = volumeMeasurementMethod;
+    }
 }

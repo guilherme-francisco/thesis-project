@@ -9,11 +9,15 @@ public class SettingsUI : MonoBehaviour
     [SerializeField] private GameObject linearSettingsUI;
     [SerializeField] private GameObject curvedSettingsUI;
     [SerializeField] private GameObject radiusSettingsUI;
+
+    [SerializeField] private GameObject volumeSettingsUI;
     
     [Header("Buttons")]
     [SerializeField] private Button linearSettingsButton;
     [SerializeField] private Button curvedSettingsButton;
     [SerializeField] private Button radiusSettingsButton;
+
+    [SerializeField] private Button volumeSettingsButton;
 
     private void Awake() {
         linearSettingsButton.onClick.AddListener(() => {
@@ -28,6 +32,11 @@ public class SettingsUI : MonoBehaviour
 
         radiusSettingsButton.onClick.AddListener(() => {
             radiusSettingsUI.SetActive(true);
+            Hide();
+        });
+
+        volumeSettingsButton.onClick.AddListener(() => {
+            volumeSettingsUI.SetActive(true);
             Hide();
         });
 
