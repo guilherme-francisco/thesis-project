@@ -32,7 +32,7 @@ namespace GK {
 	    }
 
         private void Start() {
-            InputActionsManager.Instance.InputActions.XRIRightHand.MenuButton.performed += MenuButton_Performed;
+            InputActionsManager.Instance.InputActions.XRILeftHand.MenuButton.performed += MenuButton_Performed;
         }
 
         private void MenuButton_Performed(InputAction.CallbackContext context)

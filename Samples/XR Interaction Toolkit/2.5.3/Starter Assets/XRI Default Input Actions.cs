@@ -270,7 +270,7 @@ public partial class @XRIDefaultInputActions: IInputActionCollection2, IDisposab
                     ""id"": ""02a2e81d-474c-401f-ab85-e05a6a85dd93"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold,Tap"",
                     ""initialStateCheck"": false
                 }
             ],

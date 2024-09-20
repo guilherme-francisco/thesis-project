@@ -12,7 +12,7 @@ public class MeasureByHands : MonoBehaviour
     void Start()
     {
         ToolsPanelUI.Instance.OnModeChange += ToolsPanelUI_OnModeChange;
-        InputActionsManager.Instance.InputActions.XRIRightHand.MenuButton.performed += Righthand_OnMenuButtonPerformed;
+        InputActionsManager.Instance.InputActions.XRILeftHand.MenuButton.performed += Righthand_OnMenuButtonPerformed;
         Hide();
     }
 
