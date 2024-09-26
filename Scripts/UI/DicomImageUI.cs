@@ -1,13 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System;
-using System.Linq;
-using Dicom;
-using System.IO;
-using Dicom.Imaging;
 using TMPro;
-using Dicom.Imaging.Render;
 
 public class DicomImageUI : MonoBehaviour
 {

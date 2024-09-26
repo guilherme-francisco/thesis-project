@@ -71,9 +71,9 @@ public class ToolsPanelUI : MonoBehaviour
         settingsButton.onClick.AddListener(() => OnButtonClick(settingsButton, Modes.Settings));
         
         XRIDefaultInputActions inputAction = InputActionsManager.Instance.InputActions;
-        inputAction.XRIRightHand.MenuButton.performed += OnMenuButtonPerformed;
+        inputAction.XRILeftHand.MenuButton.performed += OnMenuButtonPerformed;
 
-        dicomImageUI.SetActive(false);
+        //dicomImageUI.SetActive(false);
         Hide();
     }
 
@@ -83,7 +83,8 @@ public class ToolsPanelUI : MonoBehaviour
             return;
         }
 
-        if (dicomImageUI.activeSelf || measurementToolsUI.activeSelf) 
+        if (dicomImageUI.activeSelf || 
+        measurementToolsUI.activeSelf) 
         {
             dicomImageUI.SetActive(false);
             measurementToolsUI.SetActive(false);

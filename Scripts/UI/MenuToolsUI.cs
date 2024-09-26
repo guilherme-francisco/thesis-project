@@ -39,7 +39,7 @@ public class MenuToolsUI : MonoBehaviour
 
         XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
 
-        inputActions.XRIRightHand.MenuButton.performed += OnMenuButtonPerformed;
+        inputActions.XRILeftHand.MenuButton.performed += OnMenuButtonPerformed;
 
         minimap.SetActive(false);
         Hide();
@@ -54,7 +54,8 @@ public class MenuToolsUI : MonoBehaviour
         
         Debug.Log("Right Menu Button performed!");
 
-        if (minimap.activeSelf || dicomImageUI.activeSelf || measurementToolsUI.activeSelf) 
+        if (minimap.activeSelf || dicomImageUI.activeSelf 
+            || measurementToolsUI.activeSelf) 
         {
             minimap.SetActive(false);
             dicomImageUI.SetActive(false);

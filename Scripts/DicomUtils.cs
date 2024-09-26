@@ -1,9 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+#if UNITY_WSA
 using Dicom;
 using Dicom.Imaging;
+#endif
 using UnityEditor;
 using UnityEngine;
 
@@ -11,29 +9,34 @@ public class DicomUtils
 {
 
 
-    public string savePath = @"Assets/Data/";
+    public string savePath = @"Assets/Resources/";
 	public string filename = "heart"; 
     private Texture3D texture3D;
     private int[] imageShape;
-    public DicomUtils(string folder) {
-        GetTexture3D(folder);
+    public DicomUtils(string dicomFolder) {
+        GetTexture3D(dicomFolder);
      }
 
-    private void GetTexture3D(string folder) {
-        Texture3D texture = AssetDatabase.LoadAssetAtPath<Texture3D>(savePath + filename + ".asset");
+    private void GetTexture3D(string dicomFolder) {
+        Texture3D texture = Resources.Load<Texture3D>(filename);
 
+        Debug.Log("Texture size:" + "(" + texture.width + texture.depth + texture.height + ")" );
+        
         if (texture != null)
         {
             texture3D = texture;
             return;
         } else {
-            CreateTexture(folder);
+            #if UNITY_WSA
+            CreateTexture(dicomFolder);
             AssetDatabase.CreateAsset (texture3D, savePath + filename + ".asset");
+            #endif
         }
     }
 
-    public void CreateTexture(string folder) {
-        List<DicomFile> dicomArray = ImportDicomImages(folder);
+#if UNITY_WSA
+    public void CreateTexture(string dicomFolder) {
+        List<DicomFile> dicomArray = ImportDicomImages(dicomFolder);
 
         int rows = dicomArray[0].Dataset.Get<int>(DicomTag.Rows);
         int columns = dicomArray[0].Dataset.Get<int>(DicomTag.Columns);
@@ -67,11 +70,11 @@ public class DicomUtils
         texture3D.Apply();
     }
 
-    private List<DicomFile> ImportDicomImages(string folder)
+    private List<DicomFile> ImportDicomImages(string dicomFolder)
     {
         List<DicomFile> files = new();
 
-        foreach (string fileName in Directory.EnumerateFiles(folder))
+        foreach (string fileName in Directory.EnumerateFiles(dicomFolder))
         {
             if (Path.GetExtension(fileName).ToLower() == ".dcm")
             {
@@ -98,7 +101,7 @@ public class DicomUtils
 
         return slices.OrderBy(s => s.Dataset.Get<double>(DicomTag.SliceLocation)).ToList();
     }
-
+#endif
     public Sprite GetSpriteFromTexture(Texture2D texture) {
         Vector2 pivot = new(0.5f, 0.5f);
         Vector4 border = Vector4.zero; 
