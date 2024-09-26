@@ -1,11 +1,13 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MeasurementToolsUI : MonoBehaviour
-{
-    public MeasurementToolsUI Instance { get; private set; }   
+{   
+    public event EventHandler OnMeasurementTypeChange; 
+    public static MeasurementToolsUI Instance { get; private set; }   
     public enum MeasurementTypes {
         Default,
         Linear,
@@ -37,11 +39,17 @@ public class MeasurementToolsUI : MonoBehaviour
 
     private void OnButtonClick (MeasurementTypes measurementTypes) {
         measurementType = measurementTypes;
+        OnMeasurementTypeChange?.Invoke(this, EventArgs.Empty);
+
         Debug.Log("Measurement Type " + measurementType.ToString());
         Hide();
     }
 
     private void Hide() {
         gameObject.SetActive(false);
+    }
+
+    public MeasurementTypes GetMeasurementTypes() {
+        return measurementType;
     }
 }

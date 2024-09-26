@@ -2,15 +2,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 using UnityEngine.UI;
 
 public class ToolsPanelUI : MonoBehaviour
 {
     public event EventHandler OnNavigateEvent;
+    public event EventHandler OnModeChange;
 
-    [SerializeField] private GameObject clippingPanelUI;
+    [Header("UIs")]
+    [SerializeField] private GameObject dicomImageUI;
 
     [SerializeField] private GameObject measurementToolsUI; 
+    [SerializeField] private GameObject settingsUI;
     public static ToolsPanelUI Instance { get; private set; }
 
     public enum Modes
@@ -22,7 +27,9 @@ public class ToolsPanelUI : MonoBehaviour
         Measure,
         Tag,
         Clip,
-        Navigate
+        Navigate,
+        Dicom,
+        Settings
     }
 
     public enum Navigation {
@@ -30,6 +37,7 @@ public class ToolsPanelUI : MonoBehaviour
         Inside,
     }
 
+    [Header("Buttons")]
     [SerializeField] private Button moveButton;
     [SerializeField] private Button rotateButton;
     [SerializeField] private Button scaleButton;
@@ -37,6 +45,8 @@ public class ToolsPanelUI : MonoBehaviour
     [SerializeField] private Button tagButton;
     [SerializeField] private Button clipButton;
     [SerializeField] private Button navigateButton;
+    [SerializeField] private Button dicomButton;
+    [SerializeField] private Button settingsButton;
 
     private Modes currentMode = Modes.Default;
 
@@ -45,12 +55,11 @@ public class ToolsPanelUI : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        clippingPanelUI.SetActive(false);
     }
 
     private void Start()
     {
-        // Add listeners to each button
+        // Add listeners
         moveButton.onClick.AddListener(() => OnButtonClick(moveButton, Modes.Move));
         rotateButton.onClick.AddListener(() => OnButtonClick(rotateButton, Modes.Rotate));
         scaleButton.onClick.AddListener(() => OnButtonClick(scaleButton, Modes.Scale));
@@ -58,19 +67,37 @@ public class ToolsPanelUI : MonoBehaviour
         tagButton.onClick.AddListener(() => OnButtonClick(tagButton, Modes.Tag));
         clipButton.onClick.AddListener(() => OnButtonClick(clipButton, Modes.Clip)); 
         navigateButton.onClick.AddListener(() => OnButtonClick(navigateButton, Modes.Navigate));
+        dicomButton.onClick.AddListener(() => OnButtonClick(dicomButton, Modes.Dicom));
+        settingsButton.onClick.AddListener(() => OnButtonClick(settingsButton, Modes.Settings));
+        
+        XRIDefaultInputActions inputAction = InputActionsManager.Instance.InputActions;
+        inputAction.XRILeftHand.MenuButton.performed += OnMenuButtonPerformed;
+
+        //dicomImageUI.SetActive(false);
+        Hide();
     }
-    
+
+    private void OnMenuButtonPerformed(InputAction.CallbackContext context)
+    {
+        if (context.interaction is not TapInteraction) {
+            return;
+        }
+
+        if (dicomImageUI.activeSelf || 
+        measurementToolsUI.activeSelf) 
+        {
+            dicomImageUI.SetActive(false);
+            measurementToolsUI.SetActive(false);
+            return;
+        } else if (currentNavigation == Navigation.Outside) {
+            gameObject.SetActive(!gameObject.activeSelf);
+        }
+    }
+
     private void OnButtonClick(Button clickedButton, Modes mode)
     {
         currentMode = mode;
         clickedButton.Select();
-
-        if (mode == Modes.Clip)
-        {
-            clippingPanelUI.SetActive(true);
-        } else { 
-            clippingPanelUI.SetActive(false);
-        }
 
         if(mode == Modes.Navigate) { 
             OnNavigateEvent?.Invoke(this, EventArgs.Empty);
@@ -82,7 +109,22 @@ public class ToolsPanelUI : MonoBehaviour
             measurementToolsUI.SetActive(false);
         }
 
+        if (mode == Modes.Settings) {
+            settingsUI.SetActive(true);
+        } else {
+            settingsUI.SetActive(false);
+        }
+
+        if (mode == Modes.Dicom) {
+            currentMode = Modes.Dicom;
+            dicomImageUI.SetActive(true);
+        } else {
+            dicomImageUI.SetActive(false);
+        }
+
+        OnModeChange?.Invoke(this, EventArgs.Empty);
         Debug.Log("Current Mode: " + mode.ToString());
+        Hide();
     }
 
     public Modes GetMode()
@@ -101,5 +143,9 @@ public class ToolsPanelUI : MonoBehaviour
 
     public void SetNavigation(Navigation navigation) {
         currentNavigation = navigation;
+    }
+
+    public void Hide() { 
+        gameObject.SetActive(false);
     }
 }

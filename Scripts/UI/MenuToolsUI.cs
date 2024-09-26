@@ -4,10 +4,13 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 using UnityEngine.UI;
 
 public class MenuToolsUI : MonoBehaviour
 {
+    public static MenuToolsUI Instance { get; private set;}
+    public event EventHandler OnLeaveButtonEvent;
     [SerializeField] private Button leaveButton;
     [SerializeField] private Button dicomButton;
     [SerializeField] private Button measurementButton;
@@ -15,12 +18,16 @@ public class MenuToolsUI : MonoBehaviour
     [SerializeField] private Button mapDisplayButton;
 
     [SerializeField] private GameObject dicomImageUI;
+    [SerializeField] private GameObject sliders;
 
     [SerializeField] private GameObject minimap;
-    [SerializeField] private GameObject measurementToolsUI;    
-    [SerializeField] private Transform xrOrigin;
+    [SerializeField] private GameObject measurementToolsUI;  
 
     private ToolsPanelUI toolsPanelUI;
+
+    private void Awake() {
+        Instance = this;
+    }
 
     private void Start() {
         toolsPanelUI = ToolsPanelUI.Instance;
@@ -32,7 +39,7 @@ public class MenuToolsUI : MonoBehaviour
 
         XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
 
-        inputActions.XRIRightHand.MenuButton.performed += OnMenuButtonPerformed;
+        inputActions.XRILeftHand.MenuButton.performed += OnMenuButtonPerformed;
 
         minimap.SetActive(false);
         Hide();
@@ -40,9 +47,15 @@ public class MenuToolsUI : MonoBehaviour
 
     private void OnMenuButtonPerformed(InputAction.CallbackContext context)
     {
+
+        if (context.interaction is not TapInteraction) {
+            return;
+        }
+        
         Debug.Log("Right Menu Button performed!");
 
-        if (minimap.activeSelf || dicomImageUI.activeSelf || measurementToolsUI.activeSelf) 
+        if (minimap.activeSelf || dicomImageUI.activeSelf 
+            || measurementToolsUI.activeSelf) 
         {
             minimap.SetActive(false);
             dicomImageUI.SetActive(false);
@@ -76,16 +89,14 @@ public class MenuToolsUI : MonoBehaviour
     private void OnDicomClick()
     {
         dicomImageUI.SetActive(true);
+        sliders.SetActive(false);
         Hide();
     }
 
 
     private void OnLeaveClick()
     {
-        xrOrigin.localScale *= 10;
-        xrOrigin.position = Vector3.zero;
-        toolsPanelUI.SetMode(ToolsPanelUI.Modes.Default);
-        toolsPanelUI.SetNavigation(ToolsPanelUI.Navigation.Outside);
+        OnLeaveButtonEvent?.Invoke(this, EventArgs.Empty);
         Hide();
     }
 
