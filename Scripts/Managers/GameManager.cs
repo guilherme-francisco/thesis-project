@@ -105,7 +105,7 @@ public class GameManager : MonoBehaviour {
                 RotateModel();
                 break;
             case ToolsPanelUI.Modes.Move:
-                MoveModel();
+                MoveGameObject(model3D, panSpeed);
                 break;
             case ToolsPanelUI.Modes.Scale:
                 ScaleModel();
@@ -117,38 +117,31 @@ public class GameManager : MonoBehaviour {
     }
 
     // Move 
-    private void MoveModel()
+    public void MoveGameObject(GameObject gameObject, float speed)
     {
         Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
 
         Debug.Log("Move vector:" + thumbstickInput.ToString());
 
-        if (inputActions.XRILeftHand.PrimaryButton.IsPressed())
+        if (Mathf.Abs( inputActions.XRIRightHand.Move.ReadValue<Vector2>().y) > 0.5f)
         {
-            Vector3 moveDirection = Camera.main.transform.up;
-            float distance = panSpeed * Time.deltaTime;
-            model3D.transform.Translate(moveDirection * distance, Space.World);
-        }
-
-        if (inputActions.XRILeftHand.SecondaryButton.IsPressed())
-        {
-            Vector3 moveDirection = -Camera.main.transform.up;
-            float distance = panSpeed * Time.deltaTime;
-            model3D.transform.Translate(moveDirection * distance, Space.World);
+            Vector3 moveDirection = Mathf.Sign(inputActions.XRIRightHand.Move.ReadValue<Vector2>().y) * Camera.main.transform.up;
+            float distance = speed * Time.deltaTime;
+            gameObject.transform.Translate(moveDirection * distance, Space.World);
         }
 
         if (Mathf.Abs(thumbstickInput.x) > 0.5f)
         {
             float direction = Mathf.Sign(thumbstickInput.x);
-            Vector3 translation = direction * Camera.main.transform.right * panSpeed * Time.deltaTime;
-            model3D.transform.Translate(translation, Space.World);
+            Vector3 translation = direction * Camera.main.transform.right * speed * Time.deltaTime;
+            gameObject.transform.Translate(translation, Space.World);
         }
 
         if (Mathf.Abs(thumbstickInput.y) > 0.5f)
         {
             float direction = Mathf.Sign(thumbstickInput.y);
-            Vector3 translation = direction * Camera.main.transform.forward * panSpeed * Time.deltaTime;
-            model3D.transform.Translate(translation, Space.World);
+            Vector3 translation = direction * Camera.main.transform.forward * speed * Time.deltaTime;
+            gameObject.transform.Translate(translation, Space.World);
         }
     }
 
