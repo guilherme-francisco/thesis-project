@@ -72,5 +72,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Folders that contain large amount of data
-Data/
-Resources/
+Assets/Data/
+Assets/Resources/
