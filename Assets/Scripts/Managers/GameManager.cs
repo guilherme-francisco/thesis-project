@@ -42,7 +42,10 @@ public class GameManager : MonoBehaviour {
     private XRIDefaultInputActions inputActions;
 	private ToolsPanelUI toolsPanelUI;
 
+    private List<GameObject> sphereCreatedArray; 
+
 	void Awake () {
+        sphereCreatedArray = new List<GameObject>();
         if (Instance == null)
         {
             Instance = this;
@@ -197,6 +200,10 @@ public class GameManager : MonoBehaviour {
             scale = Mathf.Clamp(scale, scaleMin, scaleMax);
             model3D.transform.localScale = new Vector3(scale, scale, scale);
 
+            foreach (GameObject sphere in sphereCreatedArray) {
+                sphere.transform.localScale = new Vector3(scale, scale, scale);
+            }
+
             OnScaleChange?.Invoke(this, new OnScaleChangeEventArgs {
                 scale = scale,
             });
@@ -216,6 +223,9 @@ public class GameManager : MonoBehaviour {
                 sphere = Instantiate(spherePrefab, hit.point, Quaternion.identity);
                 sphere.transform.localScale = Vector3.one * sphereRadius * 2f;
 
+                sphere.transform.SetParent(hit.collider.transform);
+
+                sphereCreatedArray.Add(sphere);
                 return true;
             }
         }

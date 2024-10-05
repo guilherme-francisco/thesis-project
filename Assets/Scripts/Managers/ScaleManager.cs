@@ -31,12 +31,14 @@ public class ScaleManager : MonoBehaviour
 
 
     public float GetRealMeasurement(float value, bool isVolume = false) {
+        int metersToMilimetes = 1000;
+
         if (isVolume) {
             float scaleCorrection = originalScale / currentScale;
-            return (float)((float) value * Math.Pow(scaleCorrection, 3));
+            return (float)((float) value * Math.Pow(scaleCorrection * metersToMilimetes, 3));
         }
         
-        return value / (originalScale / currentScale);
+        return value / (originalScale / currentScale) * metersToMilimetes;
     }    
 
     public float GetOriginalScale() {
