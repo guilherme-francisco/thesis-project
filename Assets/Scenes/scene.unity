@@ -1324,6 +1324,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1914932450056451028, guid: 5ec217b3e16c7364aaeb16aeddbe26a4, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1990087291298108550, guid: 5ec217b3e16c7364aaeb16aeddbe26a4, type: 3}
       propertyPath: m_Name
       value: SphereVolumeMeasurement
@@ -18707,7 +18711,7 @@ PrefabInstance:
     - target: {fileID: 8102641116241020577, guid: dfd37da7de219a44ba3ff09e0b6b19c6, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 179cb88f85459a241ba9b8f7b388bccb, type: 2}
+      objectReference: {fileID: 2100000, guid: ff2d12b6739ccf2469a6e892ec45fd40, type: 2}
     - target: {fileID: -7635826562936255635, guid: 12bd4090a0bcb8e4d922ba84d38d4498, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -18910,6 +18914,11 @@ RectTransform:
   m_AnchoredPosition: {x: 1, y: -0.4019999}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!1 &1541610872 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -5304457597003473624, guid: dfd37da7de219a44ba3ff09e0b6b19c6, type: 3}
+  m_PrefabInstance: {fileID: 1535148120}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1554670962
 GameObject:
   m_ObjectHideFlags: 0
@@ -19377,7 +19386,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c62ef3dd95cbbd48a6d04a4557a56cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model3D: {fileID: 0}
+  model3D: {fileID: 1541610872}
   planeTransform: {fileID: 955385867}
   rotateSpeed: 50
 --- !u!4 &1594645094
