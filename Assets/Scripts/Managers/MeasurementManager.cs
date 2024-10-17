@@ -6,24 +6,28 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class MeasurementManager : MonoBehaviour
-{   
-    public enum LinearMeasurementMethods {
+{
+    public enum LinearMeasurementMethods
+    {
         Sphere,
         TwoHands,
         HandPosition
     }
 
-    public enum CurvedMeasurementMethods {
-        
+    public enum CurvedMeasurementMethods
+    {
+
         Sphere,
         HandPosition
     }
 
-    public enum RadiusMeasurementMethods {
+    public enum RadiusMeasurementMethods
+    {
         Sphere,
         Prefab
     }
-    public enum VolumeMeasurementMethods {
+    public enum VolumeMeasurementMethods
+    {
         Sphere,
         Prefab
     }
@@ -35,7 +39,7 @@ public class MeasurementManager : MonoBehaviour
     {
         public float measurementValue;
         public float secondMeasurementValue;
-        public MeasurementToolsUI.MeasurementTypes measurementTypes; 
+        public MeasurementToolsUI.MeasurementTypes measurementTypes;
     }
 
     [Header("Linear")]
@@ -51,7 +55,7 @@ public class MeasurementManager : MonoBehaviour
     [SerializeField] private GameObject curvedLineRenderer;
     [SerializeField] private GameObject CurvedLinePoint;
 
-    [SerializeField] private GameObject  curvedMeasureByPosition;
+    [SerializeField] private GameObject curvedMeasureByPosition;
 
     [Header("Radius")]
     [SerializeField] private GameObject circlePrefab;
@@ -73,19 +77,21 @@ public class MeasurementManager : MonoBehaviour
 
     private VolumeMeasurementMethods currentVolumeMeasurementMethod = VolumeMeasurementMethods.Prefab;
 
-    private void Awake() {
+    private void Awake()
+    {
         Instance = this;
     }
 
-    void Start () {
+    void Start()
+    {
         measurementToolsUI = MeasurementToolsUI.Instance;
 
-		InputActionsManager.Instance.InputActions.XRILeftHand.Select.performed += OnSelectPerformed;
+        InputActionsManager.Instance.InputActions.XRILeftHandInteraction.Select.performed += OnSelectPerformed;
         curvedLineRenderer.GetComponent<CurvedLineRenderer>().OnMeasurementEvent += CurvedLineRenderer_OnMeasurementEvent;
         measureByHands.GetComponent<CurvedLineRenderer>().OnMeasurementEvent += CurvedLineRenderer_OnMeasurementEvent;
         MeasureByPosition.Instance.OnMeasurementEvent += MeasureByPosition_OnMeasurementEvent;
         measurementToolsUI.OnMeasurementTypeChange += MeasurementToolsUI_OnMeasurementTypeChange;
-        SpherePrefab.Instance.OnMeasurementEvent += SpherePrefab_OnMeasurementEvent; 
+        SpherePrefab.Instance.OnMeasurementEvent += SpherePrefab_OnMeasurementEvent;
         VolumeHullRenderer.Instance.OnMeasurementEvent += VolumeHullRenderer_OnMeasurementEvent;
 
         SpherePrefab spherePrefab = SphereVolumeMeasurement.GetComponent<SpherePrefab>();
@@ -94,7 +100,8 @@ public class MeasurementManager : MonoBehaviour
 
     private void VolumeHullRenderer_OnMeasurementEvent(object sender, VolumeHullRenderer.OnMeasurementEventArgs e)
     {
-        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
+        {
             measurementValue = e.measurementValue,
             secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(e.measurementValue, isVolume: true),
             measurementTypes = MeasurementToolsUI.MeasurementTypes.Volume
@@ -104,7 +111,8 @@ public class MeasurementManager : MonoBehaviour
 
     private void SpherePrefab_OnMeasurementEvent(object sender, SpherePrefab.OnMeasurementEventArgs e)
     {
-        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
+        {
             measurementValue = e.measurementValue,
             secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(e.measurementValue, isVolume: true),
             measurementTypes = MeasurementToolsUI.MeasurementTypes.Volume
@@ -114,14 +122,16 @@ public class MeasurementManager : MonoBehaviour
 
     private void MeasureByPosition_OnMeasurementEvent(object sender, MeasureByPosition.OnMeasurementEventArgs e)
     {
-        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
+        {
             measurementValue = e.measurementValue,
             secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(e.measurementValue),
             measurementTypes = MeasurementToolsUI.MeasurementTypes.Linear
         });
     }
 
-    private void DisableUIs() {
+    private void DisableUIs()
+    {
         circlePrefab.SetActive(false);
         circleByThreePoints.SetActive(false);
         measureByHands.SetActive(false);
@@ -134,26 +144,39 @@ public class MeasurementManager : MonoBehaviour
     {
         DisableUIs();
 
-        if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Radius) {
+        if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Radius)
+        {
             HandleRadiusMeasure();
-        } else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Linear) {
-            if (currentLinearMeasurementMethod == LinearMeasurementMethods.TwoHands) {
+        }
+        else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Linear)
+        {
+            if (currentLinearMeasurementMethod == LinearMeasurementMethods.TwoHands)
+            {
                 measureByHands.SetActive(true);
-            } else if (currentLinearMeasurementMethod == LinearMeasurementMethods.HandPosition) {
+            }
+            else if (currentLinearMeasurementMethod == LinearMeasurementMethods.HandPosition)
+            {
                 measureByPosition.SetActive(true);
             }
-        } else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Curved) {
-            if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.HandPosition) {
+        }
+        else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Curved)
+        {
+            if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.HandPosition)
+            {
                 curvedMeasureByPosition.SetActive(true);
             }
-        } else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Volume) {
-            if (currentVolumeMeasurementMethod == VolumeMeasurementMethods.Prefab) {
+        }
+        else if (measurementToolsUI.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Volume)
+        {
+            if (currentVolumeMeasurementMethod == VolumeMeasurementMethods.Prefab)
+            {
                 var gameObject = SphereVolumeMeasurement;
 
                 gameObject.transform.position = spawnPoint.position;
-                
-                if (ToolsPanelUI.Instance.GetNavigation() == ToolsPanelUI.Navigation.Inside) {
-                    gameObject.transform.localScale =  xrOrigin.localScale;
+
+                if (ToolsPanelUI.Instance.GetNavigation() == ToolsPanelUI.Navigation.Inside)
+                {
+                    gameObject.transform.localScale = xrOrigin.localScale;
                 }
                 gameObject.SetActive(true);
             }
@@ -163,7 +186,8 @@ public class MeasurementManager : MonoBehaviour
 
     private void CurvedLineRenderer_OnMeasurementEvent(object sender, CurvedLineRenderer.OnMeasurementEventArgs e)
     {
-        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+        OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
+        {
             measurementValue = e.measurementValue,
             secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(e.measurementValue),
             measurementTypes = MeasurementToolsUI.MeasurementTypes.Curved,
@@ -173,18 +197,23 @@ public class MeasurementManager : MonoBehaviour
 
     private void OnSelectPerformed(InputAction.CallbackContext context)
     {
-        if (ToolsPanelUI.Instance.GetMode() == ToolsPanelUI.Modes.Measure) {
+        if (ToolsPanelUI.Instance.GetMode() == ToolsPanelUI.Modes.Measure)
+        {
             switch (measurementToolsUI.GetMeasurementTypes())
             {
                 case MeasurementToolsUI.MeasurementTypes.Linear:
-                    if(currentLinearMeasurementMethod == LinearMeasurementMethods.Sphere) {
+                    if (currentLinearMeasurementMethod == LinearMeasurementMethods.Sphere)
+                    {
                         HandleLinearMeasure();
                     }
                     break;
                 case MeasurementToolsUI.MeasurementTypes.Curved:
-                    if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.Sphere) {
+                    if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.Sphere)
+                    {
                         HandleCurvedMeasure();
-                    } else if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.HandPosition) {
+                    }
+                    else if (currentCurvedMeasurementMethod == CurvedMeasurementMethods.HandPosition)
+                    {
                         curvedMeasureByPosition.SetActive(true);
                     }
                     break;
@@ -192,7 +221,8 @@ public class MeasurementManager : MonoBehaviour
                     HandleRadiusMeasure();
                     break;
                 case MeasurementToolsUI.MeasurementTypes.Volume:
-                    HandleVolumeMeasure();
+                    if (currentVolumeMeasurementMethod == VolumeMeasurementMethods.Sphere)
+                        HandleVolumeMeasure();
                     break;
             }
         }
@@ -200,17 +230,19 @@ public class MeasurementManager : MonoBehaviour
 
     private void HandleRadiusMeasure()
     {
-        
-        Debug.Log(InputActionsManager.Instance.InputActions.XRILeftHand.Select.phase);
+
+        Debug.Log(InputActionsManager.Instance.InputActions.XRILeftHandInteraction.Select.phase);
         if (!circlePrefab.activeSelf && currentRadiusMeasurementMethod == RadiusMeasurementMethods.Prefab)
-        {           
+        {
             circlePrefab.SetActive(true);
             circlePrefab.transform.position = spawnPoint.position;
-            if (ToolsPanelUI.Instance.GetNavigation() == ToolsPanelUI.Navigation.Inside) {
-                circlePrefab.transform.localScale =  xrOrigin.localScale;
+            if (ToolsPanelUI.Instance.GetNavigation() == ToolsPanelUI.Navigation.Inside)
+            {
+                circlePrefab.transform.localScale = xrOrigin.localScale;
             }
         }
-        else if (currentRadiusMeasurementMethod == RadiusMeasurementMethods.Sphere && InputActionsManager.Instance.InputActions.XRILeftHand.Select.triggered) {
+        else if (currentRadiusMeasurementMethod == RadiusMeasurementMethods.Sphere && InputActionsManager.Instance.InputActions.XRILeftHandInteraction.Select.triggered)
+        {
             if (spheres.Count >= 3)
             {
                 foreach (GameObject sphere in spheres)
@@ -227,24 +259,24 @@ public class MeasurementManager : MonoBehaviour
 
             if (spheres.Count == 3)
             {
-                
-                
+
+
                 circleByThreePoints.SetActive(true);
-                
-                Vector3 center = CircleByThreePoints.Instance.CreateCircle(spheres[0].transform.position, 
-                    spheres[1].transform.position, 
+
+                Vector3 center = CircleByThreePoints.Instance.CreateCircle(spheres[0].transform.position,
+                    spheres[1].transform.position,
                     spheres[2].transform.position
                 );
-                
+
                 float radius = Vector3.Distance(spheres[0].transform.position, spheres[1].transform.position);
 
-                
+
                 Debug.Log("Distance between spheres: " + radius);
-                
+
                 OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
                 {
                     measurementValue = radius,
-                    secondMeasurementValue = (float)((float) Math.Pow(radius, 2) * Math.PI), 
+                    secondMeasurementValue = (float)((float)Math.Pow(radius, 2) * Math.PI),
                     measurementTypes = MeasurementToolsUI.MeasurementTypes.Radius
                 });
             }
@@ -252,7 +284,8 @@ public class MeasurementManager : MonoBehaviour
     }
 
 
-    private void HandleVolumeMeasure() {
+    private void HandleVolumeMeasure()
+    {
         GameManager.Instance.TryToCreatePrefab(spherePrefab, volumeHullRenderer);
     }
     private void HandleCurvedMeasure()
@@ -260,7 +293,8 @@ public class MeasurementManager : MonoBehaviour
         GameManager.Instance.TryToCreatePrefab(CurvedLinePoint, curvedLineRenderer);
     }
 
-    public void HandleCurvedMeasureByHandPosition(Vector3 position, Vector3 scale) {
+    public void HandleCurvedMeasureByHandPosition(Vector3 position, Vector3 scale)
+    {
         GameObject prefab = Instantiate(CurvedLinePoint, position, Quaternion.identity, curvedLineRenderer.transform);
 
         prefab.transform.localScale = scale;
@@ -295,37 +329,45 @@ public class MeasurementManager : MonoBehaviour
                 secondMeasurementValue = ScaleManager.Instance.GetRealMeasurement(distance)
             });
         }
-    } 
+    }
 
-    public LinearMeasurementMethods GetCurrentLinearMeasurementMethod() {
+    public LinearMeasurementMethods GetCurrentLinearMeasurementMethod()
+    {
         return currentLinearMeasurementMethod;
     }
 
-    public void SetCurrentLinearMeasurementMethod(LinearMeasurementMethods linearMeasurementMethod) {
+    public void SetCurrentLinearMeasurementMethod(LinearMeasurementMethods linearMeasurementMethod)
+    {
         currentLinearMeasurementMethod = linearMeasurementMethod;
     }
 
-    public CurvedMeasurementMethods GetCurrentCurvedMeasurementMethod() {
+    public CurvedMeasurementMethods GetCurrentCurvedMeasurementMethod()
+    {
         return currentCurvedMeasurementMethod;
     }
 
-    public void SetCurrentCurvedMeasurementMethod(CurvedMeasurementMethods curvedMeasurementMethod) {
+    public void SetCurrentCurvedMeasurementMethod(CurvedMeasurementMethods curvedMeasurementMethod)
+    {
         currentCurvedMeasurementMethod = curvedMeasurementMethod;
     }
 
-    public RadiusMeasurementMethods GetCurrentRadiusMeasurementMethod() {
+    public RadiusMeasurementMethods GetCurrentRadiusMeasurementMethod()
+    {
         return currentRadiusMeasurementMethod;
     }
 
-    public void SetCurrentRadiusMeasurementMethod(RadiusMeasurementMethods radiusMeasurementMethod) {
+    public void SetCurrentRadiusMeasurementMethod(RadiusMeasurementMethods radiusMeasurementMethod)
+    {
         currentRadiusMeasurementMethod = radiusMeasurementMethod;
     }
 
-    public VolumeMeasurementMethods GetCurrentVolumeMeasurementMethod() {
+    public VolumeMeasurementMethods GetCurrentVolumeMeasurementMethod()
+    {
         return currentVolumeMeasurementMethod;
     }
 
-    public void SetCurrentVolumeMeasurementMethod(VolumeMeasurementMethods volumeMeasurementMethod) {
+    public void SetCurrentVolumeMeasurementMethod(VolumeMeasurementMethods volumeMeasurementMethod)
+    {
         currentVolumeMeasurementMethod = volumeMeasurementMethod;
     }
 }

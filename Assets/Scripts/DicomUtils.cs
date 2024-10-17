@@ -1,4 +1,7 @@
-#if UNITY_WSA
+#if UNITY_EDITOR
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Dicom;
 using Dicom.Imaging;
 #endif
@@ -10,32 +13,36 @@ public class DicomUtils
 
 
     public string savePath = @"Assets/Resources/";
-	public string filename = "heart"; 
+    public string filename = "heart";
     private Texture3D texture3D;
     private int[] imageShape;
-    public DicomUtils(string dicomFolder) {
+    public DicomUtils(string dicomFolder)
+    {
         GetTexture3D(dicomFolder);
-     }
+    }
 
-    private void GetTexture3D(string dicomFolder) {
+    private void GetTexture3D(string dicomFolder)
+    {
         Texture3D texture = Resources.Load<Texture3D>(filename);
-
-        Debug.Log("Texture size:" + "(" + texture.width + texture.depth + texture.height + ")" );
-        
         if (texture != null)
         {
+            Debug.Log("Texture size:" + "(" + texture.width + texture.depth + texture.height + ")");
+
             texture3D = texture;
             return;
-        } else {
-            #if UNITY_WSA
+        }
+        else
+        {
+#if UNITY_EDITOR
             CreateTexture(dicomFolder);
-            AssetDatabase.CreateAsset (texture3D, savePath + filename + ".asset");
-            #endif
+            AssetDatabase.CreateAsset(texture3D, savePath + filename + ".asset");
+#endif
         }
     }
 
-#if UNITY_WSA
-    public void CreateTexture(string dicomFolder) {
+#if UNITY_EDITOR
+    public void CreateTexture(string dicomFolder)
+    {
         List<DicomFile> dicomArray = ImportDicomImages(dicomFolder);
 
         int rows = dicomArray[0].Dataset.Get<int>(DicomTag.Rows);
@@ -102,9 +109,10 @@ public class DicomUtils
         return slices.OrderBy(s => s.Dataset.Get<double>(DicomTag.SliceLocation)).ToList();
     }
 #endif
-    public Sprite GetSpriteFromTexture(Texture2D texture) {
+    public Sprite GetSpriteFromTexture(Texture2D texture)
+    {
         Vector2 pivot = new(0.5f, 0.5f);
-        Vector4 border = Vector4.zero; 
+        Vector4 border = Vector4.zero;
         return Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), pivot, 1f, 0, SpriteMeshType.FullRect, border);
     }
 
@@ -115,8 +123,10 @@ public class DicomUtils
 
         UnityEngine.Color32[] pixels = new UnityEngine.Color32[height * depth];
 
-        for (int x = 0; x < height; x++){
-            for(int z = 0; z < depth; z++) {
+        for (int x = 0; x < height; x++)
+        {
+            for (int z = 0; z < depth; z++)
+            {
                 pixels[x * depth + z] = texture3D.GetPixel(x, sliceIndex, z);
             }
         }
@@ -136,7 +146,7 @@ public class DicomUtils
 
         UnityEngine.Color32[] pixels = new UnityEngine.Color32[width * depth];
 
-        
+
         for (int z = 0; z < depth; z++)
         {
             for (int y = 0; y < width; y++)
@@ -158,12 +168,12 @@ public class DicomUtils
         int width = texture3D.width;
         int height = texture3D.height;
 
-        UnityEngine.Color32[] pixels =  new UnityEngine.Color32[width * height];
+        UnityEngine.Color32[] pixels = new UnityEngine.Color32[width * height];
 
 
         for (int x = 0; x < width; x++)
         {
-            for (int y = 0; y< height; y++)
+            for (int y = 0; y < height; y++)
             {
                 pixels[x * height + y] = texture3D.GetPixel(x, y, sliceIndex);
             }
@@ -176,8 +186,16 @@ public class DicomUtils
         return sliceTexture;
     }
 
-    public int[] GetImageShape() {
-        imageShape = new int[] { texture3D.width, texture3D.height, texture3D.depth };
-        return imageShape;
+    public int[] GetImageShape()
+    {
+        if (texture3D != null)
+        {
+            imageShape = new int[] { texture3D.width, texture3D.height, texture3D.depth };
+            return imageShape;
+        }
+        else
+        {
+            return new int[] { 0, 0, 0 };
+        }
     }
 }

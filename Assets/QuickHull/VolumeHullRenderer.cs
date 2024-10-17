@@ -6,10 +6,11 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
 
 
-namespace GK {
+namespace GK
+{
     public class VolumeHullRenderer : MonoBehaviour
     {
-        public static VolumeHullRenderer Instance { get; private set;}
+        public static VolumeHullRenderer Instance { get; private set; }
         public event EventHandler<OnMeasurementEventArgs> OnMeasurementEvent;
         public class OnMeasurementEventArgs : EventArgs
         {
@@ -18,39 +19,46 @@ namespace GK {
 
         [SerializeField] private GameObject RockPrefab;
         private ConvexHullCalculator calc = new();
-        private List<Vector3> verts = new ();
-        private  List<int> tris = new();
-        private  List<Vector3> normals = new();
+        private List<Vector3> verts = new();
+        private List<int> tris = new();
+        private List<Vector3> normals = new();
         private List<Vector3> points = new();
 
-        private void Awake() {
-            if (Instance == null) {
-                Instance = this;	
-            } else {
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
                 Debug.Log("Duplicated Volume Hull Renderer");
             }
-	    }
+        }
 
-        private void Start() {
-            InputActionsManager.Instance.InputActions.XRILeftHand.MenuButton.performed += MenuButton_Performed;
+        private void Start()
+        {
+            InputActionsManager.Instance.InputActions.XRILeftHandInteraction.MenuButton.performed += MenuButton_Performed;
         }
 
         private void MenuButton_Performed(InputAction.CallbackContext context)
         {
-            if (context.interaction is not HoldInteraction) {
-                return;
-            } 
-
-            if (ToolsPanelUI.Instance.GetMode() != ToolsPanelUI.Modes.Measure || 
-                MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Volume 
-                && MeasurementManager.Instance.GetCurrentVolumeMeasurementMethod() != MeasurementManager.VolumeMeasurementMethods.Sphere)
+            if (context.interaction is not HoldInteraction)
             {
                 return;
             }
 
-            if (points.Count >= 4) {
+            if (ToolsPanelUI.Instance.GetMode() != ToolsPanelUI.Modes.Measure ||
+                MeasurementToolsUI.Instance.GetMeasurementTypes() != MeasurementToolsUI.MeasurementTypes.Volume
+                || MeasurementManager.Instance.GetCurrentVolumeMeasurementMethod() != MeasurementManager.VolumeMeasurementMethods.Sphere)
+            {
                 return;
-            }	
+            }
+
+            if (points.Count >= 4)
+            {
+                return;
+            }
 
             Mesh mesh = GenerateHull();
 
@@ -58,9 +66,10 @@ namespace GK {
 
             Debug.Log("Volume measurement: " + volumeMeasurement.ToString("F2"));
 
-            OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs {
+            OnMeasurementEvent?.Invoke(this, new OnMeasurementEventArgs
+            {
                 measurementValue = volumeMeasurement
-		    });
+            });
         }
 
         float SignedVolumeOfTriangle(Vector3 p1, Vector3 p2, Vector3 p3)
@@ -91,7 +100,8 @@ namespace GK {
 
 
 
-        private Mesh GenerateHull() {
+        private Mesh GenerateHull()
+        {
             GetPoints();
 
             calc.GenerateHull(points, true, ref verts, ref tris, ref normals);
@@ -103,16 +113,16 @@ namespace GK {
             rock.transform.localRotation = Quaternion.identity;
             rock.transform.localScale = Vector3.one;
 
-                        
+
             var mesh = new Mesh();
             mesh.SetVertices(verts);
             mesh.SetTriangles(tris, 0);
             mesh.SetNormals(normals);
 
             rock.GetComponent<MeshFilter>().sharedMesh = mesh;
-            rock.GetComponent<MeshCollider>().sharedMesh = mesh;     
+            rock.GetComponent<MeshCollider>().sharedMesh = mesh;
 
-            return mesh;       
+            return mesh;
         }
 
 
@@ -121,7 +131,8 @@ namespace GK {
             //find curved points in children
             var spherePrefabArray = GetComponentsInChildren<SpherePrefab>();
 
-            foreach (var spherePrefab in spherePrefabArray) {
+            foreach (var spherePrefab in spherePrefabArray)
+            {
                 points.Add(spherePrefab.transform.position);
             }
         }

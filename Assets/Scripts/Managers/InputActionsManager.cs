@@ -14,13 +14,13 @@ public class InputActionsManager : MonoBehaviour
         InputActions = new XRIDefaultInputActions();
 
          // Left
-		InputActions.XRILeftHand.Activate.performed += OnActivatePerformed;
-        InputActions.XRILeftHand.PrimaryButton.performed += OnPrimaryButtonPerformed;
-        InputActions.XRILeftHand.SecondaryButton.performed += OnSecondaryButtonPerformed;
-        InputActions.XRILeftHand.MenuButton.performed += OnMenuButtonPerformed;
+		InputActions.XRILeftHandInteraction.Activate.performed += OnActivatePerformed;
+        InputActions.XRILeftHandInteraction.PrimaryButton.performed += OnPrimaryButtonPerformed;
+        InputActions.XRILeftHandInteraction.SecondaryButton.performed += OnSecondaryButtonPerformed;
+        InputActions.XRILeftHandInteraction.MenuButton.performed += OnMenuButtonPerformed;
 
         // Right
-        InputActions.XRIRightHand.Move.performed += OnRightHandMovedPerformed;
+        InputActions.XRIRightHandLocomotion.Move.performed += OnRightHandMovedPerformed;
     }
 
     private void OnMenuButtonPerformed(InputAction.CallbackContext context)
@@ -31,33 +31,33 @@ public class InputActionsManager : MonoBehaviour
     private void OnEnable()
     {
         // Left
-        InputActions.XRILeftHand.PrimaryButton.Enable();
-        InputActions.XRILeftHand.SecondaryButton.Enable();
-        InputActions.XRILeftHand.Move.Enable();
-        InputActions.XRILeftHand.Activate.Enable();
-        InputActions.XRILeftHand.Select.Enable();
-        InputActions.XRILeftHand.MenuButton.Enable();
+        InputActions.XRILeftHandInteraction.PrimaryButton.Enable();
+        InputActions.XRILeftHandInteraction.SecondaryButton.Enable();
+        InputActions.XRILeftHandLocomotion.Move.Enable();
+        InputActions.XRILeftHandInteraction.Activate.Enable();
+        InputActions.XRILeftHandInteraction.Select.Enable();
+        InputActions.XRILeftHandInteraction.MenuButton.Enable();
         // Right
-        InputActions.XRIRightHand.PrimaryButton.Enable();
-        InputActions.XRIRightHand.SecondaryButton.Enable();
-        InputActions.XRIRightHand.Move.Enable();
-        InputActions.XRIRightHand.Select.Enable();
+        InputActions.XRIRightHandInteraction.PrimaryButton.Enable();
+        InputActions.XRIRightHandInteraction.SecondaryButton.Enable();
+        InputActions.XRIRightHandLocomotion.Move.Enable();
+        InputActions.XRIRightHandInteraction.Select.Enable();
     }
 
     private void OnDisable()
     {
         // Left
-        InputActions.XRILeftHand.PrimaryButton.Disable();
-        InputActions.XRILeftHand.SecondaryButton.Disable();
-        InputActions.XRILeftHand.Move.Disable();
-        InputActions.XRILeftHand.Activate.Disable();
-        InputActions.XRILeftHand.Select.Disable();
-        InputActions.XRILeftHand.MenuButton.Disable();
+        InputActions.XRILeftHandInteraction.PrimaryButton.Disable();
+        InputActions.XRILeftHandInteraction.SecondaryButton.Disable();
+        InputActions.XRILeftHandLocomotion.Move.Disable();
+        InputActions.XRILeftHandInteraction.Activate.Disable();
+        InputActions.XRILeftHandInteraction.Select.Disable();
+        InputActions.XRILeftHandInteraction.MenuButton.Disable();
         // Right
-        InputActions.XRIRightHand.PrimaryButton.Disable();
-        InputActions.XRIRightHand.SecondaryButton.Disable();
-        InputActions.XRIRightHand.Move.Disable();
-        InputActions.XRIRightHand.Select.Disable();
+        InputActions.XRIRightHandInteraction.PrimaryButton.Disable();
+        InputActions.XRIRightHandInteraction.SecondaryButton.Disable();
+        InputActions.XRIRightHandLocomotion.Move.Disable();
+        InputActions.XRIRightHandInteraction.Select.Disable();
     }
 
 

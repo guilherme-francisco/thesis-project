@@ -39,7 +39,7 @@ public class MenuToolsUI : MonoBehaviour
 
         XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
 
-        inputActions.XRILeftHand.MenuButton.performed += OnMenuButtonPerformed;
+        inputActions.XRILeftHandInteraction.MenuButton.performed += OnMenuButtonPerformed;
 
         minimap.SetActive(false);
         Hide();

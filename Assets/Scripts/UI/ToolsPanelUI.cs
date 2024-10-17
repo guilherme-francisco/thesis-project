@@ -71,7 +71,7 @@ public class ToolsPanelUI : MonoBehaviour
         settingsButton.onClick.AddListener(() => OnButtonClick(settingsButton, Modes.Settings));
         
         XRIDefaultInputActions inputAction = InputActionsManager.Instance.InputActions;
-        inputAction.XRILeftHand.MenuButton.performed += OnMenuButtonPerformed;
+        inputAction.XRILeftHandInteraction.MenuButton.performed += OnMenuButtonPerformed;
 
         //dicomImageUI.SetActive(false);
         Hide();

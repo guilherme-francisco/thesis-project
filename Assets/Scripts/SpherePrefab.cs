@@ -19,7 +19,7 @@ public class SpherePrefab : MonoBehaviour
 
     private void Start() {
 
-        InputActionsManager.Instance.InputActions.XRILeftHand.MenuButton.performed += MenuButton_Performed;
+        InputActionsManager.Instance.InputActions.XRILeftHandInteraction.MenuButton.performed += MenuButton_Performed;
 
         gameObject.SetActive(false);
     }
@@ -39,7 +39,7 @@ public class SpherePrefab : MonoBehaviour
 
     private void Update() {
         XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
-        Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
+        Vector2 thumbstickInput = inputActions.XRILeftHandLocomotion.Move.ReadValue<Vector2>();
 
         transform.localScale += new Vector3(thumbstickInput.x * Time.deltaTime,
                                             thumbstickInput.x * Time.deltaTime, 
@@ -49,7 +49,7 @@ public class SpherePrefab : MonoBehaviour
     private void ChangeLocalScaleWithLeftHand()
     {
         XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
-        Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
+        Vector2 thumbstickInput = inputActions.XRILeftHandLocomotion.Move.ReadValue<Vector2>();
 
         if (Mathf.Abs(thumbstickInput.x) > 0.5f)
         {
@@ -62,7 +62,7 @@ public class SpherePrefab : MonoBehaviour
     private void ChangeLocalScaleWithRighttHand()
     {
         XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
-        Vector2 thumbstickInput = inputActions.XRIRightHand.Move.ReadValue<Vector2>();
+        Vector2 thumbstickInput = inputActions.XRIRightHandLocomotion.Move.ReadValue<Vector2>();
 
         if (Mathf.Abs(thumbstickInput.x) > 0.5f)
         {

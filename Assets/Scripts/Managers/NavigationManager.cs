@@ -16,7 +16,7 @@ public class NavigationManager : MonoBehaviour
         eventSystem = GetComponent<EventSystem>();
         inputActions = new XRIDefaultInputActions();
 
-        inputActions.XRIRightHand.Move.performed += OnRightHandMove;
+        inputActions.XRIRightHandLocomotion.Move.performed += OnRightHandMove;
     }
 
     private void OnRightHandMove(InputAction.CallbackContext context)

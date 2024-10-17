@@ -122,13 +122,13 @@ public class GameManager : MonoBehaviour {
     // Move 
     public void MoveGameObject(GameObject gameObject, float speed)
     {
-        Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
+        Vector2 thumbstickInput = inputActions.XRILeftHandLocomotion.Move.ReadValue<Vector2>();
 
         Debug.Log("Move vector:" + thumbstickInput.ToString());
 
-        if (Mathf.Abs( inputActions.XRIRightHand.Move.ReadValue<Vector2>().y) > 0.5f)
+        if (Mathf.Abs( inputActions.XRIRightHandLocomotion.Move.ReadValue<Vector2>().y) > 0.5f)
         {
-            Vector3 moveDirection = Mathf.Sign(inputActions.XRIRightHand.Move.ReadValue<Vector2>().y) * Camera.main.transform.up;
+            Vector3 moveDirection = Mathf.Sign(inputActions.XRIRightHandLocomotion.Move.ReadValue<Vector2>().y) * Camera.main.transform.up;
             float distance = speed * Time.deltaTime;
             gameObject.transform.Translate(moveDirection * distance, Space.World);
         }
@@ -152,16 +152,16 @@ public class GameManager : MonoBehaviour {
 
     private void RotateModel()
     {
-        Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
+        Vector2 thumbstickInput = inputActions.XRILeftHandLocomotion.Move.ReadValue<Vector2>();
 
         Debug.Log("Thumbstick input: " + thumbstickInput.ToString());
 
-        if (inputActions.XRILeftHand.PrimaryButton.IsPressed())
+        if (inputActions.XRILeftHandInteraction.PrimaryButton.IsPressed())
         {
             model3D.transform.Rotate(Vector3.forward, rotateSpeed * Time.deltaTime);
         }
 
-        if (inputActions.XRILeftHand.SecondaryButton.IsPressed())
+        if (inputActions.XRILeftHandInteraction.SecondaryButton.IsPressed())
         {
             model3D.transform.Rotate(Vector3.back, rotateSpeed * Time.deltaTime);
         }
@@ -184,7 +184,7 @@ public class GameManager : MonoBehaviour {
 
     private void ScaleModel()
     {
-        Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
+        Vector2 thumbstickInput = inputActions.XRILeftHandLocomotion.Move.ReadValue<Vector2>();
 
         float scale = Mathf.Clamp(model3D.transform.localScale[0], scaleMin, scaleMax);
 
@@ -252,7 +252,7 @@ public class GameManager : MonoBehaviour {
 
     private void HandleTag()
     {
-        if (inputActions.XRILeftHand.PrimaryButton.triggered)
+        if (inputActions.XRILeftHandInteraction.PrimaryButton.triggered)
         {
             bool success = TryToCreateSphere(out GameObject sphere);
 
@@ -266,7 +266,7 @@ public class GameManager : MonoBehaviour {
                 Debug.Log("Failed to create sphere.");
             }
         }
-        else if (inputActions.XRILeftHand.SecondaryButton.triggered)
+        else if (inputActions.XRILeftHandInteraction.SecondaryButton.triggered)
         {
             RaycastHit hit;
             if (Physics.Raycast(leftController.transform.position,

@@ -36,16 +36,16 @@ public class MeshClipper : MonoBehaviour
     private void RotatePlaneWithLeftHand()
     {
         XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
-        Vector2 thumbstickInput = inputActions.XRILeftHand.Move.ReadValue<Vector2>();
+        Vector2 thumbstickInput = inputActions.XRILeftHandLocomotion.Move.ReadValue<Vector2>();
 
         Debug.Log("MeshClipper Left input: " + thumbstickInput.ToString());
 
-        if (inputActions.XRILeftHand.PrimaryButton.IsPressed())
+        if (inputActions.XRILeftHandInteraction.PrimaryButton.IsPressed())
         {
             planeTransform.Rotate(Vector3.forward, rotateSpeed * Time.deltaTime);
         }
 
-        if (inputActions.XRILeftHand.SecondaryButton.IsPressed())
+        if (inputActions.XRILeftHandInteraction.SecondaryButton.IsPressed())
         {
             planeTransform.Rotate(Vector3.back, rotateSpeed * Time.deltaTime);
         }
@@ -66,16 +66,16 @@ public class MeshClipper : MonoBehaviour
     private void RotatePlaneWithRightHand()
     {
         XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
-        Vector2 thumbstickInput = inputActions.XRIRightHand.Move.ReadValue<Vector2>();
+        Vector2 thumbstickInput = inputActions.XRIRightHandLocomotion.Move.ReadValue<Vector2>();
 
         Debug.Log("MeshClipper Right input: " + thumbstickInput.ToString());
 
-        if (inputActions.XRIRightHand.PrimaryButton.IsPressed())
+        if (inputActions.XRIRightHandInteraction.PrimaryButton.IsPressed())
         {
             planeTransform.Rotate(Vector3.forward, rotateSpeed * Time.deltaTime);
         }
 
-        if (inputActions.XRIRightHand.SecondaryButton.IsPressed())
+        if (inputActions.XRIRightHandInteraction.SecondaryButton.IsPressed())
         {
             planeTransform.Rotate(Vector3.back, rotateSpeed * Time.deltaTime);
         }

@@ -23,8 +23,8 @@ public class MeasureByPosition : MonoBehaviour
     }
 
     private void Start() {
-        InputActionsManager.Instance.InputActions.XRILeftHand.Select.performed += LeftHand_OnSelectPerformed;
-        InputActionsManager.Instance.InputActions.XRIRightHand.Select.performed += RightHand_OnSelectPerformed;
+        InputActionsManager.Instance.InputActions.XRILeftHandInteraction.Select.performed += LeftHand_OnSelectPerformed;
+        InputActionsManager.Instance.InputActions.XRIRightHandInteraction.Select.performed += RightHand_OnSelectPerformed;
 
         Hide();
     }
