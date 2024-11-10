@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
 
     public static GameManager Instance { get; private set; }
     public event EventHandler<OnScaleChangeEventArgs> OnScaleChange;
-    public class OnScaleChangeEventArgs : EventArgs {
+    public class OnScaleChangeEventArgs : EventArgs
+    {
         public float scale;
     }
 
@@ -18,7 +20,7 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private GameObject spherePrefab;
 
     [Header("Rotate")]
-    [SerializeField] private float  rotateSpeed = 4.0f;
+    [SerializeField] private float rotateSpeed = 4.0f;
 
     [SerializeField] private float zoomSpeed = 1.0f;
 
@@ -28,7 +30,7 @@ public class GameManager : MonoBehaviour {
 
     [Header("Scale")]
     [SerializeField] private float scaleMin = 0.001f;
-	[SerializeField] private float scaleMax = 100f;
+    [SerializeField] private float scaleMax = 100f;
 
     [Header("Navigation")]
     [SerializeField] private Transform xrOrigin;
@@ -40,11 +42,12 @@ public class GameManager : MonoBehaviour {
     [SerializeField] private GameObject cameraObject;
 
     private XRIDefaultInputActions inputActions;
-	private ToolsPanelUI toolsPanelUI;
+    private ToolsPanelUI toolsPanelUI;
 
-    private List<GameObject> sphereCreatedArray; 
+    private List<GameObject> sphereCreatedArray;
 
-	void Awake () {
+    void Awake()
+    {
         sphereCreatedArray = new List<GameObject>();
         if (Instance == null)
         {
@@ -55,9 +58,10 @@ public class GameManager : MonoBehaviour {
             Debug.LogWarning("Duplicate instance of GameManager. Destroying the duplicate.");
             Destroy(gameObject);
         }
-	}
+    }
 
-    void Start () {
+    void Start()
+    {
         inputActions = InputActionsManager.Instance.InputActions;
         toolsPanelUI = ToolsPanelUI.Instance;
         toolsPanelUI.OnNavigateEvent += ToolsPanelUI_OnNavigateEvent;
@@ -69,22 +73,24 @@ public class GameManager : MonoBehaviour {
         float originalScale = ScaleManager.Instance.GetOriginalScale();
         ScaleManager.Instance.previousScale = model3D.transform.localScale.y;
         model3D.transform.localScale = new Vector3(originalScale, originalScale, originalScale);
-        
-        OnScaleChange?.Invoke(this, new OnScaleChangeEventArgs {
+
+        OnScaleChange?.Invoke(this, new OnScaleChangeEventArgs
+        {
             scale = originalScale
         });
 
         Camera cameraComponent = cameraObject.GetComponent<Camera>();
 
         cameraComponent.nearClipPlane = 0.0008f;
-        
+
         xrOrigin.localScale /= 70;
         sphereRadius /= 20;
         xrOrigin.position = model3D.transform.position;
         toolsPanelUI.SetNavigation(ToolsPanelUI.Navigation.Inside);
     }
 
-    private void MenuToolsUI_OnLeaveButtonEvent(object sender, EventArgs e) {
+    private void MenuToolsUI_OnLeaveButtonEvent(object sender, EventArgs e)
+    {
         float previousScale = ScaleManager.Instance.previousScale;
         model3D.transform.localScale = new Vector3(previousScale, previousScale, previousScale);
         ScaleManager.Instance.currentScale = previousScale;
@@ -126,7 +132,7 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log("Move vector:" + thumbstickInput.ToString());
 
-        if (Mathf.Abs( inputActions.XRIRightHandLocomotion.Move.ReadValue<Vector2>().y) > 0.5f)
+        if (Mathf.Abs(inputActions.XRIRightHandLocomotion.Move.ReadValue<Vector2>().y) > 0.5f)
         {
             Vector3 moveDirection = Mathf.Sign(inputActions.XRIRightHandLocomotion.Move.ReadValue<Vector2>().y) * Camera.main.transform.up;
             float distance = speed * Time.deltaTime;
@@ -156,14 +162,10 @@ public class GameManager : MonoBehaviour {
 
         Debug.Log("Thumbstick input: " + thumbstickInput.ToString());
 
-        if (inputActions.XRILeftHandInteraction.PrimaryButton.IsPressed())
+        if (Mathf.Abs(inputActions.XRIRightHandLocomotion.Move.ReadValue<Vector2>().y) > 0.5f)
         {
-            model3D.transform.Rotate(Vector3.forward, rotateSpeed * Time.deltaTime);
-        }
-
-        if (inputActions.XRILeftHandInteraction.SecondaryButton.IsPressed())
-        {
-            model3D.transform.Rotate(Vector3.back, rotateSpeed * Time.deltaTime);
+            model3D.transform.Rotate(Mathf.Sign(inputActions.XRIRightHandLocomotion.Move.ReadValue<Vector2>().y) * Vector3.forward,
+            rotateSpeed * Time.deltaTime);
         }
 
         if (Mathf.Abs(thumbstickInput.x) > 0.5f)
@@ -189,9 +191,9 @@ public class GameManager : MonoBehaviour {
         float scale = Mathf.Clamp(model3D.transform.localScale[0], scaleMin, scaleMax);
 
         float scroll = thumbstickInput.y * Time.deltaTime;
-        
+
         Debug.Log("Scale Factor:" + scroll.ToString());
-        
+
         bool isScaling = Mathf.Abs(scroll) > 0;
 
         if (isScaling)
@@ -200,11 +202,13 @@ public class GameManager : MonoBehaviour {
             scale = Mathf.Clamp(scale, scaleMin, scaleMax);
             model3D.transform.localScale = new Vector3(scale, scale, scale);
 
-            foreach (GameObject sphere in sphereCreatedArray) {
-                sphere.transform.localScale = new Vector3(scale, scale, scale);
-            }
+            //foreach (GameObject sphere in sphereCreatedArray)
+            //{
+            //     sphere.transform.localScale = new Vector3(scale, scale, scale);
+            //}
 
-            OnScaleChange?.Invoke(this, new OnScaleChangeEventArgs {
+            OnScaleChange?.Invoke(this, new OnScaleChangeEventArgs
+            {
                 scale = scale,
             });
 
@@ -223,7 +227,7 @@ public class GameManager : MonoBehaviour {
                 sphere = Instantiate(spherePrefab, hit.point, Quaternion.identity);
                 sphere.transform.localScale = Vector3.one * sphereRadius * 2f;
 
-                sphere.transform.SetParent(hit.collider.transform);
+                //sphere.transform.SetParent(hit.collider.transform);
 
                 sphereCreatedArray.Add(sphere);
                 return true;
@@ -256,6 +260,8 @@ public class GameManager : MonoBehaviour {
         {
             bool success = TryToCreateSphere(out GameObject sphere);
 
+            sphere.transform.SetParent(model3D.transform);
+
             if (success)
             {
                 Debug.Log("Sphere created successfully!");
@@ -282,7 +288,8 @@ public class GameManager : MonoBehaviour {
     }
 
 
-    public float GetSphereRadiusSize() {
+    public float GetSphereRadiusSize()
+    {
         return sphereRadius;
     }
 }

@@ -254,6 +254,7 @@ public class MeasurementManager : MonoBehaviour
 
             if (GameManager.Instance.TryToCreateSphere(out GameObject newSphere))
             {
+                newSphere.transform.SetParent(gameObject.transform);
                 spheres.Add(newSphere);
             }
 
@@ -314,6 +315,7 @@ public class MeasurementManager : MonoBehaviour
 
         if (GameManager.Instance.TryToCreateSphere(out GameObject newSphere))
         {
+            newSphere.transform.SetParent(gameObject.transform);
             spheres.Add(newSphere);
         }
 

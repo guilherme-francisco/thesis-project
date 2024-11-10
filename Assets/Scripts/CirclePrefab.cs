@@ -18,17 +18,19 @@ public class CirclePrefab : MonoBehaviour
 
     private XRGrabInteractable grabInteractable;
 
-    private void Start() {
+    private void Start()
+    {
         grabInteractable = GetComponent<XRGrabInteractable>();
-        
+
         grabInteractable.selectEntered.AddListener(OnGrabbed);
-        grabInteractable.selectExited.AddListener((SelectExitEventArgs _) => {rayInteractor = null;});
+        grabInteractable.selectExited.AddListener((SelectExitEventArgs _) => { rayInteractor = null; });
 
         gameObject.SetActive(false);
     }
 
 
-    private void Update() {
+    private void Update()
+    {
         XRIDefaultInputActions inputActions = InputActionsManager.Instance.InputActions;
         Vector2 thumbstickInput = inputActions.XRILeftHandLocomotion.Move.ReadValue<Vector2>();
 
@@ -37,6 +39,12 @@ public class CirclePrefab : MonoBehaviour
         diameterValueText.text = gameObject.transform.localScale.y.ToString("F2") + " m";
         radiusValueText.text = (gameObject.transform.localScale.y / 2).ToString("F2") + " m";
         areaValueText.text = (Math.Pow(gameObject.transform.localScale.y / 2, 2) * Math.PI).ToString("F2") + " m";
+
+        if (!(MeasurementToolsUI.Instance.GetMeasurementTypes() == MeasurementToolsUI.MeasurementTypes.Radius) ||
+            !(ToolsPanelUI.Instance.GetMode() == ToolsPanelUI.Modes.Measure))
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     private void ChangeLocalScaleWithLeftHand()
@@ -67,12 +75,12 @@ public class CirclePrefab : MonoBehaviour
 
     private void OnGrabbed(SelectEnterEventArgs args)
     {
-        XRBaseInteractor interactor = (XRBaseInteractor) args.interactorObject;
+        XRBaseInteractor interactor = (XRBaseInteractor)args.interactorObject;
 
         if (interactor is XRRayInteractor)
         {
             rayInteractor = interactor as XRRayInteractor;
-            
+
             string controllerName = rayInteractor.gameObject.name;
             Debug.Log("Object grabbed by: " + controllerName);
         }

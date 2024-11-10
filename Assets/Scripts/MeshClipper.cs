@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.InputSystem;
 using System;
+using Unity.VisualScripting;
 
 public class MeshClipper : MonoBehaviour
 {
@@ -15,19 +16,21 @@ public class MeshClipper : MonoBehaviour
     private XRGrabInteractable grabInteractable;
     private XRRayInteractor rayInteractor;
     private ToolsPanelUI toolsPanelUI;
-    [SerializeField] private float  rotateSpeed = 50f;
+    [SerializeField] private float rotateSpeed = 50f;
 
 
-    private void Awake() {
+    private void Awake()
+    {
         MeshRenderer renderer = model3D.GetComponent<MeshRenderer>();
         cuttingMaterial = renderer.material;
     }
 
-    private void Start() {
+    private void Start()
+    {
         grabInteractable = planeTransform.GetComponent<XRGrabInteractable>();
 
         grabInteractable.selectEntered.AddListener(OnGrabbed);
-        grabInteractable.selectExited.AddListener((SelectExitEventArgs _) => {rayInteractor = null;});
+        grabInteractable.selectExited.AddListener((SelectExitEventArgs _) => { rayInteractor = null; });
 
         planeTransform.gameObject.SetActive(false);
         toolsPanelUI = ToolsPanelUI.Instance;
@@ -97,34 +100,44 @@ public class MeshClipper : MonoBehaviour
     void Update()
     {
         //TODO: Create an event for when the modes changes 
-        if (toolsPanelUI.GetMode() == ToolsPanelUI.Modes.Clip) {
+        if (toolsPanelUI.GetMode() == ToolsPanelUI.Modes.Clip)
+        {
             planeTransform.gameObject.SetActive(true);
 
-            if (rayInteractor != null) {
-                if (rayInteractor.gameObject.name == RIGHT_CONTROLLER) 
-                RotatePlaneWithLeftHand();
-                else if (rayInteractor.gameObject.name == LEFT_CONTROLLER) 
-                RotatePlaneWithRightHand();
+            if (rayInteractor != null)
+            {
+                if (rayInteractor.gameObject.name == RIGHT_CONTROLLER)
+                    RotatePlaneWithLeftHand();
+                else if (rayInteractor.gameObject.name == LEFT_CONTROLLER)
+                    RotatePlaneWithRightHand();
             }
 
             Vector3 planePosition = planeTransform.position;
             Vector3 planeNormal = planeTransform.up * -1;
+            float absoluteDistance = Math.Abs(Vector3.Distance(model3D.transform.position, planeTransform.position));
 
-            cuttingMaterial.SetVector("_PlanePosition", planePosition);
-            cuttingMaterial.SetVector("_PlaneNormal", planeNormal);
-        }  else {
+            if (absoluteDistance < 2f)
+            {
+                cuttingMaterial.SetVector("_PlanePosition", planePosition);
+                cuttingMaterial.SetVector("_PlaneNormal", planeNormal);
+            }
+        }
+        else
+        {
             planeTransform.gameObject.SetActive(false);
+            cuttingMaterial.SetVector("_PlanePosition", Vector3.zero);
+            cuttingMaterial.SetVector("_PlaneNormal", Vector3.zero);
         }
     }
 
     private void OnGrabbed(SelectEnterEventArgs args)
     {
-        XRBaseInteractor interactor = (XRBaseInteractor) args.interactorObject;
+        XRBaseInteractor interactor = (XRBaseInteractor)args.interactorObject;
 
         if (interactor is XRRayInteractor)
         {
             rayInteractor = interactor as XRRayInteractor;
-            
+
             string controllerName = rayInteractor.gameObject.name;
             Debug.Log("Object grabbed by: " + controllerName);
         }
