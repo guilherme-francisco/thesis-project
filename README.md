@@ -8,6 +8,8 @@ Virtual reality application focused on improving spatial perception and diagnost
   <a href="https://youtu.be/U2nSuAB95VU"><img src="https://img.youtube.com/vi/U2nSuAB95VU/0.jpg" alt="Thesis demonstration" /></a>
 </p>
 
+You can check the video here: <a href="https://youtu.be/U2nSuAB95VU">https://youtu.be/U2nSuAB95VU</a>
+
 ## 🚀 Features
 - **Basic Tools**: Includes essential functions such as moving, rotating, scaling the model, and tagging areas of interest for clinical purposes.
 - **Measurement Tools**: Provides advanced techniques for measuring distances, curved paths, volumes, areas, and radius directly on the 3D cardiac model.
