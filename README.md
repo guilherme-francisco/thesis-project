@@ -5,7 +5,7 @@ Virtual reality application focused on improving spatial perception and diagnost
 ## 🎬 Demos
 
 <p align="center">
-  <img src="https://img.youtube.com/vi/U2nSuAB95VU/0.jpg" alt="Thesis demonstration" />
+  <a href="https://youtu.be/U2nSuAB95VU"><img src="https://img.youtube.com/vi/U2nSuAB95VU/0.jpg" alt="Thesis demonstration" /></a>
 </p>
 
 ## 🚀 Features
